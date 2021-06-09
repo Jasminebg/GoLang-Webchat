@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Jasminebg/GoLang-Webchat/pkg/websocket"
+	"github.com/Jasminebg/GoLangWebchat/pkg/websocket"
+	// "github.com/Jasminebg/GoLang-Webchat/pkg/websocket"
 )
 
 func serveWs(w http.ResponseWriter, r *http.Request) {
