@@ -9,7 +9,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      chatHistory: []
+      chatHistory: [],
+      typingStatus:""
     }
   }
   componentDidMount() {
@@ -21,9 +22,14 @@ class App extends Component {
       console.log(this.state);
     });
   }
-  send() {
-    console.log("hello");
-    sendMsg("hello");
+  send(event) {
+    this.typingStatus="User is typing";
+    if(event.keyCode === 13) {
+      sendMsg(event.target.value);
+      event.target.value = "";
+      this.typingStatus="";
+
+    }
   }
 
   render() {
@@ -31,7 +37,8 @@ class App extends Component {
       <div className="App">
         <Header/>
         <ChatHistory chatHistory={this.state.chatHistory} />
-        <button onClick={this.send}>Hit</button>
+        <p>{this.typingStatus}</p>
+        <ChatInput send={this.send} />  
       </div>
     );
   }
