@@ -4,6 +4,7 @@ import Header from "./Components/Header";
 import ChatHistory from "./Components/ChatHistory";
 import "./App.css";
 import { connect, sendMsg } from "./api";
+import ChatInput from "./Components/ChatInput";
 
 class App extends Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class App extends Component {
       chatHistory: [],
       typingStatus:""
     }
+    // this.send = this.send.bind(this);
   }
   componentDidMount() {
     connect((msg) => {
@@ -23,11 +25,14 @@ class App extends Component {
     });
   }
   send(event) {
-    this.typingStatus="User is typing";
+    this.setState ((prevState) => ({
+      typingStatus:"User is typing..."
+    }))
+    // this.state.typingStatus="User is typing...";
     if(event.keyCode === 13) {
       sendMsg(event.target.value);
       event.target.value = "";
-      this.typingStatus="";
+      // typingStatus="";
 
     }
   }
