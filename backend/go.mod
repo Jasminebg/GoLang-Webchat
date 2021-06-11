@@ -1,4 +1,4 @@
-module github.com/Jasminebg/GoLang-Webchat
+module github.com/Jasminebg/GoLang-Webchat/backend
 
 go 1.16
 
