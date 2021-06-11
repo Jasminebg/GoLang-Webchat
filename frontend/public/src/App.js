@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import Header from "./Components/Header";
 import ChatHistory from "./Components/ChatHistory";
+import ServerList from "./Components/ServerList";
 import "./App.css";
 import { connect, sendMsg } from "./api";
 import ChatInput from "./Components/ChatInput";
@@ -41,9 +42,12 @@ class App extends Component {
     return (
       <div className="App">
         <Header/>
+        <div style={{display:'grid', gridTemplate:' 1fr /  1fr 15fr ',  alignContent:'center', justifyContent:'center'}}>
+        <ServerList/>
         <ChatHistory chatHistory={this.state.chatHistory} />
         <p>{this.typingStatus}</p>
         <ChatInput send={this.send} />  
+        </div>
       </div>
     );
   }
