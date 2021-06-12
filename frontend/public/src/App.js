@@ -45,9 +45,9 @@ class App extends Component {
         <div style={{display:'grid', gridTemplate:' 1fr /  1fr 15fr ',  alignContent:'center', justifyContent:'center'}}>
         <ServerList/>
         <ChatHistory chatHistory={this.state.chatHistory} />
+        </div>
         <p>{this.typingStatus}</p>
         <ChatInput send={this.send} />  
-        </div>
       </div>
     );
   }
