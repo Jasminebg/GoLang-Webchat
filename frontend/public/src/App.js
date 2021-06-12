@@ -26,9 +26,9 @@ class App extends Component {
     });
   }
   send(event) {
-    this.setState ((prevState) => ({
-      typingStatus:"User is typing..."
-    }))
+    // this.setState ((prevState) => ({
+    //   typingStatus:"User is typing..."
+    // }))
     // this.state.typingStatus="User is typing...";
     if(event.keyCode === 13) {
       sendMsg(event.target.value);
