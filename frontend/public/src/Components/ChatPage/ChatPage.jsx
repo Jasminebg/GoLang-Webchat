@@ -9,6 +9,7 @@ import auth from '../../authorization/auth';
 
 
 class ChatPage extends Component {
+  _chatSocket;
   
   constructor(props){
     super(props);
@@ -90,7 +91,7 @@ class ChatPage extends Component {
     }
     return (
       <div className="ChatPage">
-        <UserList userlist>{this.state.userList}</UserList>
+        <UserList userList={this.state.userList}></UserList>
 
         <ChatHistory chatHistory = {this.state.chatHistory}/>
         <ChatInput send={e=> this.send(e)}/>

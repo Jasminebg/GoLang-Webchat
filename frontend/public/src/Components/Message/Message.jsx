@@ -20,6 +20,11 @@ class Message extends Component {
       <span classname="messageBody">{this.state.message.body}</span>
       </div>;
   }
+
+  displayTime(timeStamp){
+    var localeTime = new Date(timeStamp).toLocaleTimeString();
+    return `${localeTime.substr(0, localeTime.length - 6)}\u00A0${localeTime.substr(localeTime.length - 2, localeTime.length)}`;
+  }
 }
 
 export default Message;
