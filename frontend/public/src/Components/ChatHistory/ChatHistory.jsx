@@ -3,6 +3,18 @@ import Message from "../Message";
 import "./ChatHistory.scss";
 
 class ChatHistory extends Component {
+
+  componentDidMount(){
+    this.scrollToBottom();
+  }
+
+  componentDidUpdate(){
+    this.scrollToBottom();
+  }
+  scrollToBottom(){
+    this.e1.scrollIntoView({behvaior:'smooth'});
+  }
+
   render() {
     console.log(this.props.chatHistory);
     const messages = this.props.chatHistory.map( msg => <Message message={msg.data} />);
@@ -11,8 +23,12 @@ class ChatHistory extends Component {
 
     return (
       <div className="ChatHistory">
-        <h2>Chat History</h2>
-        {messages}
+        <div id="chatHistory" className="disable-scrollbars">
+          <div id="history"> 
+          {messages}
+          </div>
+          <div ref={e1=>{this.e1 = e1;}} />
+        </div>
       </div>
     );
   }
