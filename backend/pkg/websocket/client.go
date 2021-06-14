@@ -48,6 +48,7 @@ func (c *Client) Read() {
 		json.Unmarshal([]byte(p), &messageData)
 
 		if messageData.Id != c.ID {
+			log.Println(messageData.Id, "./.", c.ID)
 			log.Println("Unauthorized User")
 			return
 		}

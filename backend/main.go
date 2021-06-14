@@ -40,8 +40,11 @@ func (c *ChatServer) serveWs(pool *websocket.Pool, w http.ResponseWriter, r *htt
 	}
 
 	client := &websocket.Client{
-		Conn: conn,
-		Pool: pool,
+		ID:    userId,
+		User:  user,
+		Color: GetColor(),
+		Conn:  conn,
+		Pool:  pool,
 	}
 
 	pool.Register <- client

@@ -2,7 +2,7 @@
 import React, { Component } from "react";
 import {Route, Switch} from 'react-router-dom';
 import Header from "./Components/Header";
-import ServerList from "./Components/ServerList";
+// import ServerList from "./Components/ServerList";
 import ChatPage from './Components/ChatPage';
 import LoginPage from './Components/Login';
 import {ProtectedRoute} from './authorization/protected.route'
