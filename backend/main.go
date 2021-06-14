@@ -14,7 +14,7 @@ type ChatServer struct {
 }
 
 const (
-	Turquoise = "1ABC9C"
+	Turquoise = "#1ABC9C"
 	Orange    = "#E67E2A"
 	Red       = "#E92750"
 )
@@ -35,7 +35,7 @@ func (c *ChatServer) serveWs(pool *websocket.Pool, w http.ResponseWriter, r *htt
 
 	userId := keys.Get("userId")
 	if len(userId) < 1 {
-		fmt.Println("rUl param 'userId' is missing")
+		fmt.Println("Url param 'userId' is missing")
 
 	}
 

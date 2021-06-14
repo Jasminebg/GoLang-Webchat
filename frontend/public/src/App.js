@@ -15,12 +15,11 @@ class App extends Component {
         <Header/>
         {/* <ServerList/> */}
         <Route> 
-              <Switch>
-                <Route exact path="/" component={LoginPage}/>
-                <ProtectedRoute exact path="/chat" component={ChatPage} />
-                <Route path="*" component={() => "404 NOT FOUND"}/>
-              </Switch>
-           
+          <Switch>
+            <Route exact path="/" component={LoginPage}/>
+            <ProtectedRoute exact path="/chat" component={ChatPage} />
+            <Route path="*" component={() => "404 NOT FOUND"}/>
+          </Switch>
          </Route>
         
         {/* <p>{this.typingStatus}</p> */}

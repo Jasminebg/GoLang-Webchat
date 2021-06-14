@@ -13,11 +13,14 @@ class Message extends Component {
 
   render() {
     return <div className="Message">
-      <span className ="timeStamp">{this.state.timeStamp}</span>
+      <span className ="timeStamp" >
+            {this.state.timeStamp}</span>
       <span className="userName" style={{color:this.state.message.color}}>
-        {this.state.message.user}&nbsp;
-      </span>
-      <span classname="messageBody">{this.state.message.body}</span>
+            {this.state.message.user}&nbsp;
+            </span>
+      <span className="messageBody" >{
+            this.state.message.body}
+            </span>
       </div>;
   }
 

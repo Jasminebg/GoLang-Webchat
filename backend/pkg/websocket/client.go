@@ -36,13 +36,17 @@ func (c *Client) Read() {
 	}()
 
 	for {
+
 		messageType, p, err := c.Conn.ReadMessage()
+
 		if err != nil {
 			log.Println(err)
 			return
 		}
+
 		var messageData MessageData
 		json.Unmarshal([]byte(p), &messageData)
+
 		if messageData.Id != c.ID {
 			log.Println("Unauthorized User")
 			return
