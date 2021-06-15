@@ -26,11 +26,8 @@ class Message extends Component {
 
 
   displayTime(timeStamp) {
-    // var localeTime = new Date(Date.parse(timeStamp));
     var localeTime = new Date(timeStamp).toLocaleString();
-    console.log(localeTime)
-    // return localeTime;
-    return `${localeTime.substr(0, localeTime.length - 6)}\u00A0${localeTime.substr(localeTime.length - 2, localeTime.length)}`;
+    return `${localeTime.substr(11, 4)}\u00A0${localeTime.substr(localeTime.length - 2, localeTime.length)}`;
   }
 }
 

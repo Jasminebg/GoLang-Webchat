@@ -22,7 +22,7 @@ type Message struct {
 	Body      string `json:"body"`
 	User      string `json:"user"`
 	Color     string `json:"color"`
-	Timestamp string `json:"timestamp"`
+	Timestamp string `json:"timeStamp"`
 }
 type MessageData struct {
 	Message string

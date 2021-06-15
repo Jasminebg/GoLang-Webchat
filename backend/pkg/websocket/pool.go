@@ -65,6 +65,7 @@ func (pool *Pool) Start() {
 			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			for client, _ := range pool.Clients {
 				client.Conn.WriteJSON(Message{Type: 1, Body: "User Disconnected: " + deletedUser, Timestamp: time.Now().Format(time.RFC822)})
+
 				client.Conn.WriteJSON(StateMessage{Type: 0, ClientList: pool.GetClientNames()})
 			}
 			break
