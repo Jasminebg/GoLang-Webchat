@@ -12,7 +12,7 @@ class ChatHistory extends Component {
     this.scrollToBottom();
   }
   scrollToBottom(){
-    this.e1.scrollIntoView({behvaior:'smooth'});
+    this.el.scrollIntoView({behvaior:'smooth'});
   }
 
   render() {
@@ -27,7 +27,7 @@ class ChatHistory extends Component {
           <div id="history"> 
           {messages}
           </div>
-          <div ref={e1=>{this.e1 = e1;}} />
+          <div ref={el=>{this.el = el;}} />
         </div>
       </div>
     );

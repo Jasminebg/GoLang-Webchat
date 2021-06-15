@@ -21,8 +21,6 @@ class App extends Component {
             <Route path="*" component={() => "404 NOT FOUND"}/>
           </Switch>
          </Route>
-        
-        {/* <p>{this.typingStatus}</p> */}
       </div>
     );
   }

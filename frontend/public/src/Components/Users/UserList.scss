@@ -2,6 +2,10 @@
   padding-left: 10px;
   color: #6C6F77;
   width:10%;
+  position:fixed;
+  z-index: 1;
+  // height: 100%;
+  // width: 100%;
 }
 
 .user-list {
@@ -21,4 +25,5 @@
   margin: 0px;
   margin-left: 5px;
   font-size: 14px;
+  z-index: 1000;
 }

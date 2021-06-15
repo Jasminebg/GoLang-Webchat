@@ -91,8 +91,7 @@ class ChatPage extends Component {
     }
     return (
       <div className="ChatPage">
-        <UserList userList={this.state.userList}></UserList>
-
+        <UserList userList={this.state.userList}/>
         <ChatHistory chatHistory = {this.state.chatHistory}/>
         <ChatInput send={e=> this.send(e)}/>
       </div>
