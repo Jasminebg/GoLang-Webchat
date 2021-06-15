@@ -1,12 +1,16 @@
 class Auth {
   constructor(){
-    this.sessionStorageUser = 'gochatuser';
+    this.sessionStorageUser = 'ChatUser';
   }
 
-  login(name, cb) {
+  login(name, colour, cb) {
+    if(colour.charAt(0) === '#'){
+      colour = colour.replace('#', '');
+    }
     var userId = this.createGuid()
     sessionStorage.setItem(this.sessionStorageUser, JSON.stringify({
       _name: name,
+      _colour: colour,
       _userId: userId
     }));
     cb();
@@ -24,6 +28,10 @@ class Auth {
 
   getUserName() {
     return JSON.parse(sessionStorage.getItem(this.sessionStorageUser))._name;
+  }
+
+  getUserColour(){
+    return JSON.parse(sessionStorage.getItem(this.sessionStorageUser))._colour;
   }
 
   getUserId() {

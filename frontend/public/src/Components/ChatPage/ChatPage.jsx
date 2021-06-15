@@ -34,7 +34,8 @@ class ChatPage extends Component {
 
   componentDidMount(){
     if ( auth.isAuthenticated()){
-      this._chatSocket = new ChatSocket("ws://localhost:8080/ws", auth.getUserName(), auth.getUserId(), true)
+      console.log(auth.getUserColour());
+      this._chatSocket = new ChatSocket("ws://localhost:8080/ws", auth.getUserName(), auth.getUserColour(), auth.getUserId(), true)
       this._chatSocket.connect((event)=>{
         this.handleSocketEvent(event)
       });

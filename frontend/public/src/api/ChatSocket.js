@@ -2,8 +2,8 @@ class ChatSocket{
   _socketEndpoint;
   _socket;
 
-  constructor(socketEndpoint, userName, userId, connect=false){
-    this._socketEndpoint = `${socketEndpoint}?user=${userName}&userId=${userId}`;
+  constructor(socketEndpoint, userName, userColour, userId, connect=false){
+    this._socketEndpoint = `${socketEndpoint}?user=${userName}&userColour=${userColour}&userId=${userId}`;
     this._socket = connect ? new WebSocket(this._socketEndpoint):null;
   }
 

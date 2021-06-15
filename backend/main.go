@@ -32,6 +32,11 @@ func (c *ChatServer) serveWs(pool *websocket.Pool, w http.ResponseWriter, r *htt
 		fmt.Println("Url param 'user' is missing")
 		return
 	}
+	colour := keys.Get("userColour")
+	if len(user) < 1 {
+		fmt.Println("Url param 'colour' is missing")
+		return
+	}
 
 	userId := keys.Get("userId")
 	if len(userId) < 1 {
@@ -42,7 +47,7 @@ func (c *ChatServer) serveWs(pool *websocket.Pool, w http.ResponseWriter, r *htt
 	client := &websocket.Client{
 		ID:    userId,
 		User:  user,
-		Color: GetColor(),
+		Color: "#" + colour,
 		Conn:  conn,
 		Pool:  pool,
 	}
