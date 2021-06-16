@@ -1,10 +1,21 @@
 .ChatInput {
   width: 100%;
-  position: fixed;
+  position: absolute;
   bottom: 20px;
+  max-height:55px;
 
+
+  // .upload-image{
+  //   // position:fixed;
+  //   // right:20px;
+  //   // left:5px;
+  //   // bottom:15px;
+  //   // width:30px;
+  //   // height:100px;
+  // }
   input {
-    padding: 10px;
+    // position:fixed;
+    padding: 10px ;
     margin: auto;
     background-color: #40444B;
     color: #D7D5D9;
@@ -14,5 +25,16 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
     width: 80%;
     box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.1);
+  }
+
+  .upload-icon{
+    padding:0 10px;
+    // top:10px;
+    margin:auto ;
+    // right:0;
+    // top:10px;
+    height:40px;
+    max-height:40px;
+    // height:10%;
   }
 }

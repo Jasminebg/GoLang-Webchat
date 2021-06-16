@@ -2,7 +2,7 @@ import React,{Component} from 'react';
 import { Redirect } from 'react-router-dom';
 import ChatSocket from '../../api/ChatSocket';
 import "./ChatPage"
-import ChatHistory from "../ChatHistory/ChatHistory";
+import ChatHistory from "../ChatHistory";
 import ChatInput from "../ChatInput";
 import UserList from "../Users";
 import auth from '../../authorization/auth';

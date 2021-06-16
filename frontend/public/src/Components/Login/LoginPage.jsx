@@ -51,21 +51,21 @@ class LoginPage extends Component {
     }
     
     verifyInput=()=>{
-      if (this.state.name !== '' && this.checkColor() ){
+      if (this.state.name !== ''  ){
         this.submitLogin();
       }
     }
 
-    checkColor=()=>{
-      if(/^#?([0-9A-F]{6})$/i.test(this.state.colour)){
-        return true;
-      }
-      this.setState({
-        colour:"E92750"
-      }, () => console.log(this.state.colour) );
-      return true;
+    // checkColor=()=>{
+    //   if(/^#?([0-9A-F]{6})$/i.test(this.state.colour)){
+    //     return true;
+    //   }
+    //   this.setState({
+    //     colour:"E92750"
+    //   }, () => console.log(this.state.colour) );
+    //   return true;
       
-    }
+    // }
 
     keyPressed =(event)=>{
       if (event.key === "Enter"){

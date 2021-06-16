@@ -43,43 +43,58 @@ func (pool *Pool) Start() {
 	go pool.CleanupHeartBeat()
 	for {
 		select {
-		// client connecting
+		//connecting
 		case client := <-pool.Register:
-			pool.Clients[client] = true
-			newUser := string(client.User)
-			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
-			for client, _ := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: 1, Body: "New User Joined: " + newUser, Timestamp: time.Now().Format(time.RFC822)})
-				client.Conn.WriteJSON(StateMessage{Type: 0, ClientList: pool.GetClientNames()})
+			pool.registerClient(client)
 
-				pool.CleanupMessageList()
-				// for _, message := range pool._messageList {
-				// 	client.Conn.WriteJSON(message);
-				// }
-			}
 			break
-		// client disconnecting
+		//disconnecting
 		case client := <-pool.Unregister:
-			delete(pool.Clients, client)
-			deletedUser := string(client.User)
-			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
-			for client, _ := range pool.Clients {
-				client.Conn.WriteJSON(Message{Type: 1, Body: "User Disconnected: " + deletedUser, Timestamp: time.Now().Format(time.RFC822)})
-
-				client.Conn.WriteJSON(StateMessage{Type: 0, ClientList: pool.GetClientNames()})
-			}
+			pool.unregisterClient(client)
 			break
-		// client broadcasting message
+		//broadcasting message
 		case message := <-pool.Broadcast:
-			fmt.Println("Sending message to all clients in Pool")
-			for client, _ := range pool.Clients {
-				pool.CleanupMessageList()
-				pool._messageList = append(pool._messageList, message)
-				if err := client.Conn.WriteJSON(message); err != nil {
-					fmt.Println(err)
-					return
-				}
-			}
+			pool.broadcastToClients(message)
+
+		}
+	}
+}
+
+func (pool *Pool) registerClient(client *Client) {
+	pool.Clients[client] = true
+	newUser := string(client.User)
+	fmt.Println("Size of Connection Pool: ", len(pool.Clients))
+	for client, _ := range pool.Clients {
+		client.Conn.WriteJSON(Message{Type: 1, Body: "New User Joined: " + newUser, Timestamp: time.Now().Format(time.RFC822)})
+		client.Conn.WriteJSON(StateMessage{Type: 0, ClientList: pool.GetClientNames()})
+
+		pool.CleanupMessageList()
+		for _, message := range pool._messageList {
+			client.Conn.WriteJSON(message)
+		}
+	}
+}
+func (pool *Pool) unregisterClient(client *Client) {
+
+	delete(pool.Clients, client)
+	deletedUser := string(client.User)
+	fmt.Println("Size of Connection Pool: ", len(pool.Clients))
+	for client, _ := range pool.Clients {
+		client.Conn.WriteJSON(Message{Type: 1, Body: "User Disconnected: " + deletedUser, Timestamp: time.Now().Format(time.RFC822)})
+
+		client.Conn.WriteJSON(StateMessage{Type: 0, ClientList: pool.GetClientNames()})
+	}
+
+}
+func (pool *Pool) broadcastToClients(message Message) {
+
+	fmt.Println("Sending message to all clients in Pool")
+	for client, _ := range pool.Clients {
+		pool.CleanupMessageList()
+		pool._messageList = append(pool._messageList, message)
+		if err := client.Conn.WriteJSON(message); err != nil {
+			fmt.Println(err)
+			return
 		}
 	}
 }

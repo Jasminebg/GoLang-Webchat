@@ -29,6 +29,13 @@ type MessageData struct {
 	Id      string
 }
 
+// var acceptedTypes = &map[string]string{
+// 	"image/jpeg": ".jpg",
+// 	"image/jpg":  ".jpg",
+// 	"image/png":  ".png",
+// 	"image/gif":  ".gif",
+// }
+
 func (c *Client) Read() {
 	defer func() {
 		c.Pool.Unregister <- c

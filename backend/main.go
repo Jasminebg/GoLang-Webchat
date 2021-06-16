@@ -33,6 +33,13 @@ func (c *ChatServer) serveWs(pool *websocket.Pool, w http.ResponseWriter, r *htt
 		return
 	}
 	colour := keys.Get("userColour")
+	if colour == "" {
+		colour = "E92750"
+	}
+	// else {
+	// 	tmp := colour
+	// }
+	// colour := tmp
 	if len(user) < 1 {
 		fmt.Println("Url param 'colour' is missing")
 		return
