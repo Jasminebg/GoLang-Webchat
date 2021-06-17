@@ -41,7 +41,7 @@ type MessageData struct {
 	Action  string
 }
 
-func serveWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
+func ServeWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	name, ok := r.URL.Query()["user"]
 
 	if !ok || len(name[0]) < 1 {

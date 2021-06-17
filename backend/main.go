@@ -16,7 +16,7 @@ func main() {
 	go pool.Start()
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(pool, w, r)
+		ServeWs(pool, w, r)
 	})
 	// chatServer.setupRoutes()
 	// use below for deploying?
