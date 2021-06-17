@@ -1,6 +1,8 @@
 package websocket
 
 import (
+	"fmt"
+
 	"github.com/google/uuid"
 )
 
@@ -39,8 +41,8 @@ func (room *Room) RunRoom() {
 		case client := <-room.unregister:
 			room.unregisterClientInRoom(client)
 
-			// case message := <-room.broadcast:
-			// room.broadcastToClientsInRoom(message)
+		case message := <-room.broadcast:
+			room.broadcastToClientsInRoom(message.encode())
 
 		}
 
@@ -49,25 +51,27 @@ func (room *Room) RunRoom() {
 }
 
 func (room *Room) registerClientInRoom(client *Client) {
-	// room.notifyClientJoined(Client)
+	room.notifyClientJoined(client)
+	room.clients[client] = true
 
 }
 func (room *Room) unregisterClientInRoom(client *Client) {
 
 }
-func (room *Room) broadcastToClientsInRoom(message Message) {
-	// for client := range room.clients {
-	// 	client.send <- message
-	// }
+func (room *Room) broadcastToClientsInRoom(message []byte) {
+	for client := range room.clients {
+		client.send <- message
+	}
 
 }
 
 func (room *Room) notifyClientJoined(client *Client) {
-	// message := &Message{
-	// 	Action:  SendMessageAction,
-	// 	Target:  rooom,
-	// 	Message: fmt.Sprintf(welcomeMessage, client.GetName()),
-	// }
+	message := &Message{
+		Action:  SendMessage,
+		Target:  room.Name,
+		Message: fmt.Sprintf(welcomeMessage, client.GetName()),
+	}
+	room.broadcastToClientsInRoom(message.encode())
 
 }
 
