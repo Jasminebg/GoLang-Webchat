@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -35,35 +36,6 @@ var (
 	space   = []byte{' '}
 )
 
-type MessageData struct {
-	Message string
-	Id      string
-	Action  string
-}
-
-func ServeWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
-	name, ok := r.URL.Query()["user"]
-
-	if !ok || len(name[0]) < 1 {
-		log.Println("Url param 'user' is missing")
-		return
-	}
-	color, ok := r.URL.Query()["userColour"]
-	if !ok || len(color[0]) < 1 {
-		color[0] = "E92750"
-	}
-
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	client := newClient(conn, pool, name[0], color[0])
-
-	go client.Write()
-	go client.Read()
-}
-
 func newClient(conn *websocket.Conn, pool *Pool, name string, color string) *Client {
 	return &Client{
 		ID:    uuid.New(),
@@ -94,7 +66,12 @@ func (client *Client) Read() {
 			}
 			break
 		}
-
+		var ms Message
+		if err := json.Unmarshal(jsonMessage, &ms); err != nil {
+		}
+		fmt.Println("read unmarshal")
+		fmt.Println(ms)
+		fmt.Println(ms.Message)
 		client.handleNewMessage(jsonMessage)
 	}
 }
@@ -107,8 +84,12 @@ func (client *Client) Write() {
 	}()
 
 	for {
+
 		select {
 		case message, ok := <-client.send:
+			fmt.Println("Sending...")
+			// fmt.Println(ok)
+			// message.Timestamp = time.Now().Format(time.RFC822)
 			client.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
@@ -118,13 +99,23 @@ func (client *Client) Write() {
 			if err != nil {
 				return
 			}
+			// fmt.Println(message)
 			w.Write(message)
+			var ms Message
+			if err := json.Unmarshal(message, &ms); err != nil {
+			}
+			fmt.Println("unmarshal")
+			fmt.Println(ms)
+			fmt.Println(ms.Message)
 
 			n := len(client.send)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
 				w.Write(<-client.send)
 			}
+			// fmt.Println(n)
+			// fmt.Println("write info")
+			// fmt.Println(message)
 
 			if err := w.Close(); err != nil {
 				return
@@ -139,45 +130,29 @@ func (client *Client) Write() {
 	}
 }
 
-// func (c *Client) Read() {
-// 	defer func() {
-// 		c.Pool.Unregister <- c
-// 		c.Conn.Close()
-// 	}()
+func ServeWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
+	name, ok := r.URL.Query()["user"]
 
-// 	for {
+	if !ok || len(name[0]) < 1 {
+		log.Println("Url param 'user' is missing")
+		return
+	}
+	color, ok := r.URL.Query()["userColour"]
+	if !ok || len(color[0]) < 1 {
+		color[0] = "E92750"
+	}
 
-// 		messageType, p, err := c.Conn.ReadMessage()
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	client := newClient(conn, pool, name[0], color[0])
 
-// 		if err != nil {
-// 			log.Println(err)
-// 			return
-// 		}
-
-// 		var messageData MessageData
-// 		json.Unmarshal([]byte(p), &messageData)
-
-// 		// if messageData.Id != c.ID {
-// 		// 	// log.Println(messageData.Id, "./.", c.ID)
-// 		// 	log.Println("Unauthorized User")
-// 		// 	return
-// 		// }
-
-// 		message := Message{
-// 			Type:      messageType,
-// 			Message:   messageData.Message,
-// 			User:      c.User,
-// 			Color:     c.Color,
-// 			Timestamp: time.Now().Format(time.RFC822)}
-// 		// Action:    messageData.Action}
-
-// 		c.handleNewMessage(message.encode())
-
-// 		// c.Pool.Broadcast <- message
-// 		fmt.Printf("Message Received: %+v\n", message)
-// 	}
-// }
-
+	go client.Write()
+	go client.Read()
+	client.Pool.Register <- client
+}
 func (client *Client) disconnect() {
 	client.Pool.Unregister <- client
 	for room := range client.rooms {
@@ -190,14 +165,24 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	var message Message
 	if err := json.Unmarshal(jsonMessage, &message); err != nil {
 		log.Printf("Error on unmarshal JSON message %s", err)
+		return
 	}
-	message.Sender = client
+	message.User = client.User
+	message.Uid = client.ID.String()
+	message.Color = client.Color
+	message.Timestamp = time.Now().Format(time.RFC822)
+	// fmt.Println("handlenewmsg")
+	// fmt.Println(message)
+	// fmt.Println(message.Timestamp)
+	fmt.Println(message)
+	fmt.Println(message.TargetId)
 
 	switch message.Action {
 	case SendMessage:
-		roomName := message.Target
+		// roomID := client.Pool.findRoomByName()
 		//is room only a local variable here?
-		if room := client.Pool.findRoomByName(roomName); room != nil {
+		// message.Color = client.Color
+		if room := client.Pool.findRoomByID(message.TargetId); room != nil {
 			room.broadcast <- &message
 		}
 
@@ -207,21 +192,22 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	case LeaveRoom:
 		client.handleLeaveRoomMessage(message)
 
-	}
+	case JoinRoomPrivate:
+		client.handleJoinRoomPrivateMessage(message)
 
+	}
+	// fmt.Println(client.rooms[client.Pool.findRoomByName(message.Message)])
 }
 func (client *Client) handleJoinRoomMessage(message Message) {
-	roomName := message.Message
-	room := client.Pool.findRoomByName(roomName)
-	if room == nil {
-		room = client.Pool.createRoom(roomName)
-	}
-	client.rooms[room] = true
-	room.register <- client
+	client.joinRoom(message.Message, nil)
 }
 
 func (client *Client) handleLeaveRoomMessage(message Message) {
 	room := client.Pool.findRoomByName(message.Message)
+	if room == nil {
+		return
+	}
+
 	if _, ok := client.rooms[room]; ok {
 		delete(client.rooms, room)
 	}
@@ -230,10 +216,66 @@ func (client *Client) handleLeaveRoomMessage(message Message) {
 
 }
 
+func (client *Client) handleJoinRoomPrivateMessage(message Message) {
+	target := client.Pool.findClientByID(message.Message)
+
+	if target == nil {
+		return
+	}
+	roomName := message.Message + client.ID.String()
+
+	client.joinRoom(roomName, target)
+	target.joinRoom(roomName, client)
+
+}
+func (client *Client) joinRoom(roomName string, sender *Client) {
+	room := client.Pool.findRoomByName(roomName)
+	if room == nil {
+		room = client.Pool.createRoom(roomName, sender != nil)
+	}
+
+	if sender == nil && room.Private {
+		return
+	}
+	if !client.isInRoom(room) {
+		client.rooms[room] = true
+		// fmt.Println(client.rooms[room])
+		room.register <- client
+		client.notifyRoomJoined(room)
+	}
+	// fmt.Println("End of JoinRoom")
+}
+
+func (client *Client) isInRoom(room *Room) bool {
+	if _, ok := client.rooms[room]; ok {
+		return true
+	}
+	return false
+
+}
+
+func (client *Client) notifyRoomJoined(room *Room) {
+	message := Message{
+		Action:   RoomJoined,
+		Target:   room.Name,
+		TargetId: room.ID.String(),
+		// Sender: client,
+		User: client.User,
+		Uid:  client.ID.String(),
+	}
+	// fmt.Println(message)
+	// fmt.Println("End of notifyRoomJoined")
+	client.send <- message.encode()
+
+}
+
 func (client *Client) GetName() string {
 	return client.User
 }
 
+// func (client *Client) handleNewMessage(jsonMessage []byte){
+
+// }
 // func (client *Client) handleNewMessage(jsonMessage []byte){
 
 // }

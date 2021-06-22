@@ -17,12 +17,18 @@
   }
 
   h2 {
-    width: 200px;
-    margin: 0;
+    // position:fixed;
+    // width: 15%;
+    height:32px;
+    margin: 0px 10px;
+    // margin: 0;
     padding: 0;
   }
 
   .logout-button {
+    position:absolute;
+    right:5%;
+    width:100px;
     padding: 4px 10px 4px 10px;
     background-color: #36393F;
     color: #B9BBBE;
@@ -33,5 +39,22 @@
   .logout-button:hover {
     background-color: #595E66;
     cursor: pointer;
+  }
+
+  input{
+    position:absolute;
+    // float: left;
+    width:150px;
+    left:5%;
+    // padding: 10px ;
+    // margin: 0px 10px;
+    background-color: #40444B;
+    color: #D7D5D9;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    // width: 80%;
+    box-shadow: 0 5px 15px -5px rgba(0, 0, 0, 0.1);
   }
 }

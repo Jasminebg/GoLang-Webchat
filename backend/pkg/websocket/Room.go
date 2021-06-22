@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -42,6 +43,7 @@ func (room *Room) RunRoom() {
 			room.unregisterClientInRoom(client)
 
 		case message := <-room.broadcast:
+			message.Timestamp = time.Now().Format(time.RFC822)
 			room.broadcastToClientsInRoom(message.encode())
 
 		}
@@ -51,26 +53,48 @@ func (room *Room) RunRoom() {
 }
 
 func (room *Room) registerClientInRoom(client *Client) {
-	room.notifyClientJoined(client)
-	room.clients[client] = true
+	if !room.Private {
+		room.notifyClientJoined(client)
+		room.clients[client] = true
+
+	}
+	// fmt.Println("end of register")
 
 }
 func (room *Room) unregisterClientInRoom(client *Client) {
+	if _, ok := room.clients[client]; ok {
+		delete(room.clients, client)
+	}
 
 }
 func (room *Room) broadcastToClientsInRoom(message []byte) {
+	fmt.Println(room.clients)
 	for client := range room.clients {
+		fmt.Println(client.User)
 		client.send <- message
 	}
+	// fmt.Println(message.Sender)
+	// fmt.Println(Unmarshal(message))
+	// fmt.Println("..")
 
 }
 
-func (room *Room) notifyClientJoined(client *Client) {
+func (room *Room) notifyClientJoined(sender *Client) {
+	// fmt.Println("pre broadcast")
 	message := &Message{
-		Action:  SendMessage,
-		Target:  room.Name,
-		Message: fmt.Sprintf(welcomeMessage, client.GetName()),
+		Message:   fmt.Sprintf(welcomeMessage, sender.GetName()),
+		Action:    SendMessage,
+		Target:    room.Name,
+		TargetId:  room.ID.String(),
+		Timestamp: time.Now().Format(time.RFC822),
+		// Private:   room.Private,
 	}
+	// fmt.Println(SendMessage)
+	// fmt.Println(room)
+	// fmt.Println(fmt.Sprintf(welcomeMessage, sender.GetName()))
+	// fmt.Println("pre broadcast")
+	// fmt.Println("notify client joined")
+	// fmt.Println(message)
 	room.broadcastToClientsInRoom(message.encode())
 
 }

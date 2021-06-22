@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import auth from '../../authorization/auth';
+import auth from '../../../authorization/auth';
 import "./LoginPage.scss"
 
 class LoginPage extends Component {
@@ -15,9 +15,7 @@ class LoginPage extends Component {
   handleChange = (e) => {
     this.setState({
       [e.target.name]: e.target.value
-    }
-    , () =>  console.log(this.state.colour)
-    );
+    });
     // console.log(/^#?(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$/i.test(this.state.color));
     // console.log(this.state.colour);
   }

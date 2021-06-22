@@ -1,9 +1,6 @@
 package websocket
 
-import (
-	"fmt"
-	"time"
-)
+import "time"
 
 type StateMessage struct {
 	Type       int        `json:"type"`
@@ -16,12 +13,12 @@ type UserInfo struct {
 }
 
 type Pool struct {
-	Register     chan *Client
-	Unregister   chan *Client
-	Clients      map[*Client]bool
-	Broadcast    chan Message
-	rooms        map[*Room]bool
-	_messageList []Message
+	Register   chan *Client
+	Unregister chan *Client
+	Clients    map[*Client]bool
+	Broadcast  chan Message
+	rooms      map[*Room]bool
+	// _messageList []Message
 	// _messageLimit                 int
 	// _expirationLimitHrs           time.Duration
 	// _cleanupHeartbeatIntervalMins time.Duration
@@ -31,12 +28,12 @@ type Pool struct {
 
 func NewPool() *Pool {
 	return &Pool{
-		Register:     make(chan *Client),
-		Unregister:   make(chan *Client),
-		Clients:      make(map[*Client]bool),
-		Broadcast:    make(chan Message),
-		rooms:        make(map[*Room]bool),
-		_messageList: []Message{},
+		Register:   make(chan *Client),
+		Unregister: make(chan *Client),
+		Clients:    make(map[*Client]bool),
+		Broadcast:  make(chan Message),
+		rooms:      make(map[*Room]bool),
+		// _messageList: []Message{},
 		// _messageLimit:                 messageLimit,
 		// _expirationLimitHrs:           expirationLimitHrs,
 		// _cleanupHeartbeatIntervalMins: cleanupHeartbeatIntervalMins,
@@ -58,48 +55,67 @@ func (pool *Pool) Start() {
 			break
 		//broadcasting message
 		case message := <-pool.Broadcast:
-			pool.broadcastToClients(message)
+			pool.broadcastToClients(message.encode())
 
 		}
 	}
 }
 
 func (pool *Pool) registerClient(client *Client) {
-	pool.Clients[client] = true
-	newUser := string(client.User)
-	fmt.Println("Size of Connection Pool: ", len(pool.Clients))
-	for client, _ := range pool.Clients {
-		client.Conn.WriteJSON(Message{Type: 1, Message: "New User Joined: " + newUser, Timestamp: time.Now().Format(time.RFC822)})
-		client.Conn.WriteJSON(StateMessage{Type: 0, ClientList: pool.GetClientNames()})
 
-		// pool.CleanupMessageList()
-		for _, message := range pool._messageList {
-			client.Conn.WriteJSON(message)
-		}
-	}
+	pool.notifyClientJoined(client)
+	pool.listClients(client)
+	pool.Clients[client] = true
+
 }
 func (pool *Pool) unregisterClient(client *Client) {
 
-	delete(pool.Clients, client)
-	deletedUser := string(client.User)
-	fmt.Println("Size of Connection Pool: ", len(pool.Clients))
-	for client, _ := range pool.Clients {
-		client.Conn.WriteJSON(Message{Type: 1, Message: "User Disconnected: " + deletedUser, Timestamp: time.Now().Format(time.RFC822)})
-
-		client.Conn.WriteJSON(StateMessage{Type: 0, ClientList: pool.GetClientNames()})
+	if _, ok := pool.Clients[client]; ok {
+		delete(pool.Clients, client)
+		pool.notifyClientLeft(client)
 	}
 
 }
-func (pool *Pool) broadcastToClients(message Message) {
 
-	fmt.Println("Sending message to all clients in Pool")
-	for client, _ := range pool.Clients {
-		// pool.CleanupMessageList()
-		pool._messageList = append(pool._messageList, message)
-		if err := client.Conn.WriteJSON(message); err != nil {
-			fmt.Println(err)
-			return
+func (pool *Pool) notifyClientJoined(client *Client) {
+	message := &Message{
+		Action: userJoined,
+		// Sender:    client,
+		User: client.User,
+		// Uid:  client.ID.String(),
+		Timestamp: time.Now().Format(time.RFC822),
+	}
+	pool.broadcastToClients(message.encode())
+}
+
+func (pool *Pool) notifyClientLeft(client *Client) {
+	message := &Message{
+		Action: UserLeft,
+		// Sender:    client,
+		User:      client.User,
+		Timestamp: time.Now().Format(time.RFC822),
+	}
+	pool.broadcastToClients(message.encode())
+}
+func (pool *Pool) listClients(client *Client) {
+	for existingClient := range pool.Clients {
+		message := &Message{
+			Action: userJoined,
+			// Sender:    existingClient,
+			User: existingClient.User,
+			// Timestamp: time.Now().Format(time.RFC822),
 		}
+		client.send <- message.encode()
+	}
+}
+
+func (pool *Pool) broadcastToClients(message []byte) {
+
+	// fmt.Println("Sending message to all clients in Pool")
+	// fmt.Println(message)
+
+	for client := range pool.Clients {
+		client.send <- message
 	}
 }
 
@@ -116,6 +132,17 @@ func (pool *Pool) GetClientNames() []UserInfo {
 	return clients
 }
 
+func (pool *Pool) findRoomByID(ID string) *Room {
+	var foundRoom *Room
+	for room := range pool.rooms {
+		if room.GetId() == ID {
+			foundRoom = room
+			break
+		}
+	}
+	return foundRoom
+}
+
 func (pool *Pool) findRoomByName(name string) *Room {
 	var foundRoom *Room
 	for room := range pool.rooms {
@@ -126,35 +153,24 @@ func (pool *Pool) findRoomByName(name string) *Room {
 	}
 	return foundRoom
 }
-func (pool *Pool) createRoom(name string) *Room {
-	room := NewRoom(name, false)
+func (pool *Pool) createRoom(name string, private bool) *Room {
+	room := NewRoom(name, private)
 	// ^ bool for privacy
 	go room.RunRoom()
 	pool.rooms[room] = true
 
+	// fmt.Println("Create room end")
+
 	return room
 }
 
-// func (pool *Pool) createRoom(name string) *Room{
-
-// }
-// func (pool *Pool) CleanupHeartBeat() {
-// 	for range time.Tick(time.Minute * pool._cleanupHeartbeatIntervalMins) {
-// 		pool.CleanupMessageList()
-// 	}
-// }
-
-// func (pool *Pool) CleanupMessageList() {
-// 	if len(pool._messageList) > pool._messageLimit {
-// 		pool._messageList = pool._messageList[len(pool._messageList)-pool._messageLimit:]
-// 	}
-
-// 	for index, message := range pool._messageList {
-// 		expirationTime := time.Now().Add(-pool._expirationLimitHrs * time.Hour)
-// 		messageTime, _ := time.Parse(time.RFC822, message.Timestamp)
-// 		if messageTime.Before(expirationTime) {
-// 			pool._messageList = pool._messageList[len(pool._messageList)-index:]
-// 			return
-// 		}
-// 	}
-// }
+func (pool *Pool) findClientByID(ID string) *Client {
+	var foundClient *Client
+	for client := range pool.Clients {
+		if client.ID.String() == ID {
+			foundClient = client
+			break
+		}
+	}
+	return foundClient
+}
