@@ -7,6 +7,7 @@ import ChatInput from "../ChatInput";
 import UserList from "../Users";
 import auth from '../../../authorization/auth';
 import Header from '../../Head/Header'
+import ServerList from '../ServerList'
 
 
 class ChatPage extends Component {
@@ -18,7 +19,13 @@ class ChatPage extends Component {
       isActive:false,
       chatHistory:[],
       userList:[],
-      rooms:[]
+      rooms:[],
+      room : {
+        name:'',
+        ID: '',
+        messages:[],
+        users:[]
+      }
     }
   }
   
@@ -44,7 +51,7 @@ class ChatPage extends Component {
   componentDidMount(){
     if ( auth.isAuthenticated()){
       // console.log(auth.getUserColour());
-      this._chatSocket = new ChatSocket("ws://localhost:8080/ws", auth.getUserName(), auth.getUserColour(), true)
+      this._chatSocket = new ChatSocket(auth.getUserName(), auth.getUserColour())
 
     }
   }
@@ -59,14 +66,18 @@ class ChatPage extends Component {
     })
   }
 
-  send(event){
+  send(event, room){
     if(event.keyCode === 13 && event.target.value !== "") {
       // console.log(event.target.value)
-      this._chatSocket.sendMessage(this.state.roomName, event.target.value);
+      this._chatSocket.sendMessage(room, event.target.value);
       event.target.value = "";
       // console.log(this._chatSocket.room.messages)
-      console.log("send event")
-      console.log(this._chatSocket.room)
+      this.setState ({
+        rooms : Object.values(this._chatSocket.rooms)
+      });
+      // this.state.rooms = Object.values(this._chatSocket.rooms);
+      // console.log("send event")
+      // console.log(this._chatSocket.room)
     }
   }
   findRoom(event){
@@ -74,15 +85,21 @@ class ChatPage extends Component {
     if(event.keyCode === 13 && event.target.value !== ""){
       this._chatSocket.joinRoom(event.target.value);
       this._chatSocket.roomInput = event.target.value;
-      this.setState({
-        roomName : event.target.value
-      });
       console.log("join  event")
-      console.log(this._chatSocket.rooms)
-  
+      this.setState ({
+        rooms : Object.values(this._chatSocket.rooms)
+      });
+      // this.state.rooms = Object.values(this._chatSocket.rooms);
+      // this.room = this.rooms[event.target.value];
       event.target.value = "";
-      // console.log(this._chatSocket.room)
     }
+  }
+
+  changeRoom(event){
+    this.setState({
+      room: this._chatSocket.findRoom(event.target.value)
+    });
+
   }
   
 
@@ -91,14 +108,36 @@ class ChatPage extends Component {
     if(!auth.isAuthenticated){
       return <Redirect to='/' />
     }
+    
+          {/* { this._chatSocket.rooms && this._chatSocket.rooms.map((room, index) => */}
     return (
-      <div className="ChatPage">
-        <Header roomName = {e=> this.findRoom(e)}/>
-        <UserList userList={this.state.userList}/>
-        <ChatHistory chatHistory={this.state.chatHistory} ></ChatHistory>
-        {/* <ChatHistory chatHistory = {this.state.chatHistory}/> */}
-        <ChatInput send={e=> this.send(e)}/>
-      </div>
+      // <div style = {{height:'100vw', backgroundColor:'#36393F'}}> 
+        <div className="ChatPage" >
+          <Header roomName = {e=> this.findRoom(e)}/>
+          <ServerList rooms = {this.state.rooms} changeRoom={e=> this.changeRoom(e)}/>
+          {/* { this.state.rooms && this.state.rooms.map((room, index) =>
+          <ServerList key = {index} roomName={room.name} roomID = {room.ID} 
+            changeRoom= {this.changeRoom(room.ID) } />
+
+              )} */}
+            <div className = "roomPage"> 
+              <UserList userList={this.state.room.users}/>
+              <ChatHistory chatHistory={this.state.room.messages}></ChatHistory>
+              <ChatInput send={e=> this.send(e, this.state.room)}/>
+            </div>
+        </div>
+      // </div>
+      //   <div className="ChatPage" >
+      //   <Header roomName = {e=> this.findRoom(e)}/>
+      //   { this.state.rooms && this.state.rooms.map((room, index) =>
+
+      //     <div key={index} className = "roomPage"> 
+      //       <UserList userList={room.users}/>
+      //       <ChatHistory chatHistory={room.messages}></ChatHistory>
+      //       <ChatInput send={e=> this.send(e, room)}/>
+      //     </div>
+      //   )}
+      // </div>
     )
   }
 }

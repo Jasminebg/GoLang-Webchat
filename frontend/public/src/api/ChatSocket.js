@@ -7,15 +7,16 @@ class ChatSocket{
     userID: ''
   };
   // roomInput;
-  rooms = [];
+  rooms = {};
   room = {
     name:'',
     ID: '',
-    messages:[]
+    messages:[],
+    users:[]
   };
   cs;
 
-  constructor(socketEndpoint, userName, userColour, connect=false){
+  constructor( userName, userColour){
     // this._socketEndpoint = `${socketEndpoint}?user=${userName}&userColour=${userColour}&userId=${userId}`;
     // this._socket = connect ? new WebSocket(this._socketEndpoint):null;
     this.cs = new WebSocket(`ws://localhost:8080/ws?user=${userName}&userColour=${userColour}`)
@@ -63,18 +64,60 @@ class ChatSocket{
     }
   }
   handleChatMessage(msg){
-   this.room = this.findRoom(msg.roomID);
-   if (typeof this.room !== "undefined"){
-     this.room.messages.push(msg);
+   if (typeof this.rooms[msg.room] !== "undefined"){
+    let message = {
+      msg:msg.message,
+      user:msg.user,
+      color:msg.color,
+      timeStamp: msg.timestamp
+    }
+    this.rooms[msg.room].messages.push(message);
+    console.log(this.rooms[msg.room]);
+    console.log("chatm");
    } 
+  //  this.rooms[this.room.name] = this.room;
   };
   handleUserJoined(msg){
-    this.users.push(msg.user);
+    let message = {
+      msg:msg.message,
+      user:msg.user,
+      color:msg.color,
+      timeStamp: msg.timestamp
+    };
+    let user = {
+      name: msg.user,
+      color: msg.color
+    };
+    this.users.push(user);
+    this.rooms[msg.room].message.push(message);
+
   };
   handleRoomJoined(msg){
-    this.room.name = msg.room;
-    this.room.ID = msg.roomid;
-    this.rooms[this.room.name] = this.room;
+    // this.room.name = msg.room;
+    // this.room.ID = msg.roomid;
+    // let message = {
+    //   msg:msg.message,
+    //   user:msg.user,
+    //   color:msg.color,
+    //   timeStamp: msg.timestamp
+    // }
+    // let message = {
+    //   msg:"",
+    //   user:"",
+    //   color:"",
+    //   timeStamp:""
+    // }
+    let user = {
+      name: msg.user,
+      color: msg.color
+    };
+    let room = {
+      name:msg.room,
+      ID: msg.roomid,
+      messages:[],
+      users:[user]
+    };
+    this.rooms[msg.room] =  room;
   };
 
   handleUserLeft(msg){
@@ -85,7 +128,7 @@ class ChatSocket{
     }
   };
 
-  sendMessage(roomname, msg){
+  sendMessage(room, msg){
     // this.room = this.findRoom(roomname);
     // console.log(this.room); 
     // console.log("send") 
@@ -93,8 +136,8 @@ class ChatSocket{
       this.cs.send(JSON.stringify({
         action:"send-message",
         message:msg,
-        roomid:this.room.ID,
-        room:this.room.name
+        roomid:room.ID,
+        room:room.name
       }));
       
       // this.room.message.push(msg);

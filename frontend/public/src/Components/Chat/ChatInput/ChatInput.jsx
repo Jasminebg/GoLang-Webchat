@@ -18,19 +18,10 @@ class ChatInput extends Component {
 //     console.log(files)
 //   }
   render() {
+    console.log(this.props.room);
     return (
-      <div className="ChatInput"
-        // onDragOver={dragOver}
-        // onDragEnter={dragEnter}
-        // onDragLeave={dragLeave}
-        // onDrop={fileDrop}
-      >
-        {/* <div className="upload-image"> */}
-          {/* <DragImage handleDrop = {this.handleDrop}> */}
+      <div className="ChatInput" >
             <input onKeyDown={this.props.send} />
-            {/* <img alt="" className="upload-icon" src={upload}/> */}
-          {/* </DragImage> */}
-        {/* </div> */}
       </div>
     );
   }

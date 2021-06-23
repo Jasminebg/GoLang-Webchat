@@ -4,7 +4,7 @@ import "./Message.scss";
 class Message extends Component {
   constructor(props) {
     super(props);
-    let temp = JSON.parse(this.props.message);
+    let temp = this.props.message;
     this.state = {
       message: temp,
       timeStamp: this.displayTime(temp.timeStamp)
@@ -15,11 +15,11 @@ class Message extends Component {
     return <div className="Message">
       <span className ="timeStamp" >
             {this.state.timeStamp}</span>
-      <span className="userName" style={{color:this.state.message.color}}>
+      <span className="userName" style={{color:"#"+this.state.message.color}}>
             {this.state.message.user}&nbsp;
             </span>
       <span className="messageBody" >{
-            this.state.message.body}
+            this.state.message.msg}
             </span>
       </div>;
   }

@@ -260,8 +260,9 @@ func (client *Client) notifyRoomJoined(room *Room) {
 		Target:   room.Name,
 		TargetId: room.ID.String(),
 		// Sender: client,
-		User: client.User,
-		Uid:  client.ID.String(),
+		User:  client.User,
+		Color: client.Color,
+		Uid:   client.ID.String(),
 	}
 	// fmt.Println(message)
 	// fmt.Println("End of notifyRoomJoined")
