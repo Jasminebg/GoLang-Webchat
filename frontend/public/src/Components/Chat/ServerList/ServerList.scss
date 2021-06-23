@@ -1,17 +1,20 @@
 .Servers{
   z-index: 1;
+  top:50px;
   position: absolute;
-  left:10px;
-  width:50px;
+  left:0px;
   flex:1;
   margin: 5px 5px;
 }
 .ServerIcons{
+  margin:5px;
   display: flex;
   border-radius: 100%;
-  background-color: rgb(94, 36, 94);
+  width:50px;
+  background-color: #646974;
   height:50px;
   justify-content: center;
   align-items: center;
   font-size: 12px;
+  color:#B9BBBE;
 }

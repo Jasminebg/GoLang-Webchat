@@ -14,7 +14,7 @@ class ServerList extends Component {
         <div className="server-list">
           { this.props.rooms && this.props.rooms.map((room, index) =>
           <div key={index} className="ServerIcons" value = {room.ID} onClick={this.props.changeRoom} > 
-            {room.name.split(' ').map(function(item){return item[0]}).join('')}
+            {room.name.split(' ').map(function(item){return item[0]}).join('').toUpperCase()}
           </div>
            )} 
         </div>
