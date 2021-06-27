@@ -4,13 +4,13 @@ import "./UserList.scss"
 class  UserList extends Component {
   
  render() { 
-  console.log("userlist");
-   console.log(this.props.userList);
+  // console.log("userlist");
+  //  console.log(this.props.userList);
     return (
       <div className="UserList">
         <div className="user-list">
           <p className="usersLabel"> Users:</p>
-           {this.props.userList.map((user, index) => 
+           {this.props.userList && this.props.userList.map((user, index) => 
           <p key={index} className="user" style={{ color: "#"+user.color }}>{user.name}</p>
         )}
         </div>

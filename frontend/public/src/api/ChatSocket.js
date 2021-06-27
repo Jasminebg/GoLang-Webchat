@@ -4,13 +4,13 @@ class ChatSocket{
   users = [];
   user= {
     username: this.userName,
-    userID: ''
+    userID:""
   };
   // roomInput;
   rooms = {};
   room = {
-    name:'',
-    ID: '',
+    name:"",
+    ID: "",
     messages:[],
     users:[]
   };
@@ -56,76 +56,108 @@ class ChatSocket{
         case "room-joined":
           this.handleRoomJoined(msg)
           break;
+        case "user-join-room":
+          this.handleUserJoinedRoom(msg)
+          break;
+        case "list-clients":
+          this.handleListClients(msg)
+          break;
         default:
           break;
 
       }
       // console.log(this.room.messages);
     }
+    // this.props.updateState();
+  }
+  handleUserJoinedRoom(msg){
+  let user = {
+    name: msg.user,
+    id: msg.id,
+    color: msg.color
+  };
+
+  this.rooms[msg.roomid].users.push(user)
+
+
+  }
+  handleListClients(msg){
+    let user = {
+      name: msg.user,
+      id: msg.id,
+      color: msg.color
+    };
+    this.rooms[msg.roomid].users.push(user)
   }
   handleChatMessage(msg){
-   if (typeof this.rooms[msg.room] !== "undefined"){
+   if (typeof this.rooms[msg.roomid] !== "undefined"){
     let message = {
       msg:msg.message,
       user:msg.user,
       color:msg.color,
       timeStamp: msg.timestamp
     }
-    this.rooms[msg.room].messages.push(message);
-    console.log(this.rooms[msg.room]);
-    console.log("chatm");
+    this.rooms[msg.roomid].messages.push(message);
+    // console.log(this.rooms[msg.roomid]);
+    // console.log("chatm");
    } 
   //  this.rooms[this.room.name] = this.room;
   };
   handleUserJoined(msg){
-    let message = {
-      msg:msg.message,
-      user:msg.user,
-      color:msg.color,
-      timeStamp: msg.timestamp
-    };
-    let user = {
-      name: msg.user,
-      color: msg.color
-    };
-    this.users.push(user);
-    this.rooms[msg.room].message.push(message);
-
-  };
-  handleRoomJoined(msg){
-    // this.room.name = msg.room;
-    // this.room.ID = msg.roomid;
     // let message = {
     //   msg:msg.message,
     //   user:msg.user,
     //   color:msg.color,
     //   timeStamp: msg.timestamp
-    // }
-    // let message = {
-    //   msg:"",
-    //   user:"",
-    //   color:"",
-    //   timeStamp:""
-    // }
+    // };
     let user = {
       name: msg.user,
+      id: msg.id,
       color: msg.color
     };
-    let room = {
-      name:msg.room,
-      ID: msg.roomid,
-      messages:[],
-      users:[user]
+    this.users.push(user);
+    // this.users.push(user);
+    // this.rooms[msg.roomid].message.push(message);
+    // this.rooms[msg.roomid].users.push(user);
+
+  };
+  handleRoomJoined(msg){
+    let user = {
+      name: msg.user,
+      id: msg.id,
+      color: msg.color
     };
-    this.rooms[msg.room] =  room;
+    console.log("room joined");
+    console.log(this.rooms[msg.roomid]);
+    //returning undefined
+    if (typeof this.rooms[msg.roomid] === "undefined"){
+      let room = {
+        name:msg.room,
+        ID: msg.roomid,
+        messages:[],
+        users:[user]
+      };
+
+      this.rooms[msg.roomid] = room;
+    } else {
+      this.rooms[msg.roomid].users.push(user);
+
+    }
   };
 
   handleUserLeft(msg){
-    for (let i =0; i< this.users.length;i++){
-      if (this.users[i].id === msg.user){
-        this.users.splice(i,1);
+    // for (let i =0; i< this.users.length;i++){
+    //   if (this.users[i].id === msg.user){
+    //     this.users.splice(i,1);
+    //   }
+    // }
+    for (let i =0; i< this.rooms[msg.roomid].users.length;i++){
+      if (this.rooms[msg.roomid].users[i].id === msg.id){
+        this.rooms[msg.roomid].users.splice(i,1);
       }
     }
+    // delete this.rooms[msg.roomID].users
+
   };
 
   sendMessage(room, msg){

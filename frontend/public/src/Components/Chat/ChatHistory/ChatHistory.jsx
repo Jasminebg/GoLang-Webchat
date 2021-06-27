@@ -7,6 +7,7 @@ class ChatHistory extends Component {
   componentDidMount(){
     this.scrollToBottom();
     console.log(this.props.chatHistory)
+    this.forceUpdate();
   }
 
   componentDidUpdate(){
@@ -20,8 +21,8 @@ class ChatHistory extends Component {
     // console.log(this.props.chatHistory);
     const messages = this.props.chatHistory && this.props.chatHistory.map( (msg,index) => <Message key={index} message={msg} />);
 
-    console.log("chat history");
-    console.log(messages);
+    // console.log("chat history");
+    // console.log(messages);
     return (
       <div className="ChatHistory">
         <div id="chatHistory" className="disable-scrollbars">

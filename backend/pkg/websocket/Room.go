@@ -56,9 +56,9 @@ func (room *Room) registerClientInRoom(client *Client) {
 	if !room.Private {
 		room.notifyClientJoined(client)
 		room.clients[client] = true
+		room.listClientsinRoom(client)
 
 	}
-	// fmt.Println("end of register")
 
 }
 func (room *Room) unregisterClientInRoom(client *Client) {
@@ -68,19 +68,33 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 
 }
 func (room *Room) broadcastToClientsInRoom(message []byte) {
-	fmt.Println(room.clients)
 	for client := range room.clients {
-		fmt.Println(client.User)
 		client.send <- message
+		// fmt.Println(client)
+		// fmt.Println("broadcast")
 	}
-	// fmt.Println(message.Sender)
-	// fmt.Println(Unmarshal(message))
-	// fmt.Println("..")
 
 }
 
+func (room *Room) listClientsinRoom(client *Client) {
+	for otherclient := range room.clients {
+		if otherclient.GetID() != client.GetID() {
+			message := &Message{
+				Action:   userJoinedRoom,
+				User:     otherclient.GetName(),
+				Color:    otherclient.GetColor(),
+				Uid:      otherclient.GetID(),
+				TargetId: room.ID.String(),
+				// Private:   room.Private,
+			}
+			client.send <- message.encode()
+			fmt.Println(client)
+			fmt.Println("broadcast clients in room")
+
+		}
+	}
+}
 func (room *Room) notifyClientJoined(sender *Client) {
-	// fmt.Println("pre broadcast")
 	message := &Message{
 		Message:   fmt.Sprintf(welcomeMessage, sender.GetName()),
 		Action:    SendMessage,
@@ -89,13 +103,17 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		Timestamp: time.Now().Format(time.RFC822),
 		// Private:   room.Private,
 	}
-	// fmt.Println(SendMessage)
-	// fmt.Println(room)
-	// fmt.Println(fmt.Sprintf(welcomeMessage, sender.GetName()))
-	// fmt.Println("pre broadcast")
-	// fmt.Println("notify client joined")
-	// fmt.Println(message)
 	room.broadcastToClientsInRoom(message.encode())
+
+	joinMessage := &Message{
+		Action:   userJoinedRoom,
+		User:     sender.GetName(),
+		Color:    sender.GetColor(),
+		Uid:      sender.GetID(),
+		Target:   room.Name,
+		TargetId: room.ID.String(),
+	}
+	room.broadcastToClientsInRoom(joinMessage.encode())
 
 }
 

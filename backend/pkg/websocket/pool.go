@@ -81,21 +81,26 @@ func (pool *Pool) notifyClientJoined(client *Client) {
 	message := &Message{
 		Action: userJoined,
 		// Sender:    client,
-		User: client.User,
-		// Uid:  client.ID.String(),
+		User:      client.User,
+		Uid:       client.ID.String(),
+		Color:     client.Color,
 		Timestamp: time.Now().Format(time.RFC822),
 	}
 	pool.broadcastToClients(message.encode())
 }
 
 func (pool *Pool) notifyClientLeft(client *Client) {
-	message := &Message{
-		Action: UserLeft,
-		// Sender:    client,
-		User:      client.User,
-		Timestamp: time.Now().Format(time.RFC822),
+	for room := range client.rooms {
+		message := &Message{
+			Action: UserLeft,
+			// Sender:    client,
+			TargetId:  room.ID.String(),
+			User:      client.User,
+			Uid:       client.ID.String(),
+			Timestamp: time.Now().Format(time.RFC822),
+		}
+		pool.broadcastToClients(message.encode())
 	}
-	pool.broadcastToClients(message.encode())
 }
 func (pool *Pool) listClients(client *Client) {
 	for existingClient := range pool.Clients {
@@ -110,9 +115,6 @@ func (pool *Pool) listClients(client *Client) {
 }
 
 func (pool *Pool) broadcastToClients(message []byte) {
-
-	// fmt.Println("Sending message to all clients in Pool")
-	// fmt.Println(message)
 
 	for client := range pool.Clients {
 		client.send <- message
@@ -158,8 +160,6 @@ func (pool *Pool) createRoom(name string, private bool) *Room {
 	// ^ bool for privacy
 	go room.RunRoom()
 	pool.rooms[room] = true
-
-	// fmt.Println("Create room end")
 
 	return room
 }

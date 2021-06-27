@@ -69,9 +69,6 @@ func (client *Client) Read() {
 		var ms Message
 		if err := json.Unmarshal(jsonMessage, &ms); err != nil {
 		}
-		fmt.Println("read unmarshal")
-		fmt.Println(ms)
-		fmt.Println(ms.Message)
 		client.handleNewMessage(jsonMessage)
 	}
 }
@@ -87,8 +84,6 @@ func (client *Client) Write() {
 
 		select {
 		case message, ok := <-client.send:
-			fmt.Println("Sending...")
-			// fmt.Println(ok)
 			// message.Timestamp = time.Now().Format(time.RFC822)
 			client.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
@@ -99,7 +94,6 @@ func (client *Client) Write() {
 			if err != nil {
 				return
 			}
-			// fmt.Println(message)
 			w.Write(message)
 			var ms Message
 			if err := json.Unmarshal(message, &ms); err != nil {
@@ -113,9 +107,6 @@ func (client *Client) Write() {
 				w.Write(newline)
 				w.Write(<-client.send)
 			}
-			// fmt.Println(n)
-			// fmt.Println("write info")
-			// fmt.Println(message)
 
 			if err := w.Close(); err != nil {
 				return
@@ -171,11 +162,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	message.Uid = client.ID.String()
 	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
-	// fmt.Println("handlenewmsg")
-	// fmt.Println(message)
-	// fmt.Println(message.Timestamp)
-	fmt.Println(message)
-	fmt.Println(message.TargetId)
 
 	switch message.Action {
 	case SendMessage:
@@ -196,7 +182,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		client.handleJoinRoomPrivateMessage(message)
 
 	}
-	// fmt.Println(client.rooms[client.Pool.findRoomByName(message.Message)])
 }
 func (client *Client) handleJoinRoomMessage(message Message) {
 	client.joinRoom(message.Message, nil)
@@ -239,11 +224,9 @@ func (client *Client) joinRoom(roomName string, sender *Client) {
 	}
 	if !client.isInRoom(room) {
 		client.rooms[room] = true
-		// fmt.Println(client.rooms[room])
 		room.register <- client
-		client.notifyRoomJoined(room)
+		client.notifyRoomJoined(room, sender)
 	}
-	// fmt.Println("End of JoinRoom")
 }
 
 func (client *Client) isInRoom(room *Room) bool {
@@ -254,7 +237,7 @@ func (client *Client) isInRoom(room *Room) bool {
 
 }
 
-func (client *Client) notifyRoomJoined(room *Room) {
+func (client *Client) notifyRoomJoined(room *Room, sender *Client) {
 	message := Message{
 		Action:   RoomJoined,
 		Target:   room.Name,
@@ -264,14 +247,19 @@ func (client *Client) notifyRoomJoined(room *Room) {
 		Color: client.Color,
 		Uid:   client.ID.String(),
 	}
-	// fmt.Println(message)
-	// fmt.Println("End of notifyRoomJoined")
 	client.send <- message.encode()
 
 }
 
 func (client *Client) GetName() string {
 	return client.User
+}
+func (client *Client) GetColor() string {
+	return client.Color
+}
+
+func (client *Client) GetID() string {
+	return client.ID.String()
 }
 
 // func (client *Client) handleNewMessage(jsonMessage []byte){

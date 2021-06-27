@@ -31,7 +31,7 @@ class LoginPage extends Component {
           </div>
           <div className="form__group field">
             <input type="input" className="form__field" name='colour' id="colour" value={this.state.color} onChange={e=> this.handleChange(e)}/>
-            <label htmlFor="colour" className="form__label">Colour  <span style={{color:'#E92750'}}>(eg default: Red[#E92750]) </span>  </label>
+            <label htmlFor="colour" className="form__label">Colour  <span style={{color:'#E92750'}}>(default(blank): Red) </span>  </label>
           </div>
           <button className="login-button"  onKeyPress={this.onKeyPress} onClick={this.verifyInput}>Login</button>
 

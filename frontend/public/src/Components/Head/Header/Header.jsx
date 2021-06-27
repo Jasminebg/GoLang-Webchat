@@ -5,12 +5,6 @@ import "./Header.scss";
 
 class Header extends Component{
 
-  constructor(props){
-    super(props);
-    this.state={
-      roomName:""
-    };
-  }
   // handleChange = (e) => {
   //   this.setState({
   //     [e.target.name]: e.target.value
@@ -27,9 +21,8 @@ class Header extends Component{
   render() {
     return(
     <div className="header">
-      <input  onKeyDown={this.props.roomName}/>
-      {/* <input type="input" className="form__field" name='roomName' id="roomName"  value={this.state.roomName} placeholder="room name..." onChange={ this.props.send}/> */}
-      <h2>Chat App</h2>
+      <input placeholder="Join room" onKeyDown={this.props.roomName}/>
+      <h2>{ this.props.currentRoom  || "Chat App" }</h2>
       <button className="logout-button" onClick={() => { this.handleLogout()}}>
         Logout
       </button>

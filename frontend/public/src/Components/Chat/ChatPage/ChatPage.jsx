@@ -75,6 +75,7 @@ class ChatPage extends Component {
       this.setState ({
         rooms : Object.values(this._chatSocket.rooms)
       });
+      this.updateState();
       // this.state.rooms = Object.values(this._chatSocket.rooms);
       // console.log("send event")
       // console.log(this._chatSocket.room)
@@ -85,21 +86,33 @@ class ChatPage extends Component {
     if(event.keyCode === 13 && event.target.value !== ""){
       this._chatSocket.joinRoom(event.target.value);
       this._chatSocket.roomInput = event.target.value;
-      console.log("join  event")
+      // console.log("join  event")
       this.setState ({
         rooms : Object.values(this._chatSocket.rooms)
       });
       // this.state.rooms = Object.values(this._chatSocket.rooms);
       // this.room = this.rooms[event.target.value];
       event.target.value = "";
+      this.updateState();
     }
   }
-
-  changeRoom(event){
+  updateState (){
     this.setState({
-      room: this._chatSocket.findRoom(event.target.value)
+      rooms: Object.values(this._chatSocket.rooms)
     });
+  }
 
+  changeRoom= (roomID)=>{
+    this.setState({
+      room: this._chatSocket.rooms[roomID]
+    });
+    // console.log(event.target.value);
+    console.log(this._chatSocket.rooms);
+    // console.log(this._chatSocket.findRoom(roomID));
+    // console.log(roomID);
+    console.log(this.state.room);
+    console.log("changeRoom");
+    this.updateState();
   }
   
 
@@ -109,12 +122,11 @@ class ChatPage extends Component {
       return <Redirect to='/' />
     }
     
-          {/* { this._chatSocket.rooms && this._chatSocket.rooms.map((room, index) => */}
     return (
       // <div style = {{height:'100vw', backgroundColor:'#36393F'}}> 
         <div className="ChatPage" >
-          <Header roomName = {e=> this.findRoom(e)}/>
-          <ServerList rooms = {this.state.rooms} changeRoom={e=> this.changeRoom(e)}/>
+          <Header roomName = {e=> this.findRoom(e)} currentRoom={this.state.room.name}/>
+          <ServerList rooms = {this.state.rooms} changeRoom={ this.changeRoom}/>
           {/* { this.state.rooms && this.state.rooms.map((room, index) =>
           <ServerList key = {index} roomName={room.name} roomID = {room.ID} 
             changeRoom= {this.changeRoom(room.ID) } />
