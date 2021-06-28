@@ -20,11 +20,30 @@ class ChatSocket{
     // this._socketEndpoint = `${socketEndpoint}?user=${userName}&userColour=${userColour}&userId=${userId}`;
     // this._socket = connect ? new WebSocket(this._socketEndpoint):null;
     this.cs = new WebSocket(`ws://localhost:8080/ws?user=${userName}&userColour=${userColour}`)
-    this.cs.addEventListener('open', (event) => {this.createSocket(event)});
-    this.cs.addEventListener('message', (event) => {this.handleNewMessage(event)});
+    // this.cs.addEventListener('open', (event) => {this.createSocket(event)});
+    // this.cs.addEventListener('message', (event) => {this.handleNewMessage(event)});
 
   }
-
+  connect(cb) {
+    console.log("Attempting Connection...");
+  
+    this.cs.onopen = () => {
+      console.log("Successfully Connected");
+    };
+  
+    this.cs.onmessage = (msg) => {
+      cb(msg)
+    };
+  
+    this.cs.onclose = (event) => {
+      console.log("Socket Closed Connection: ", event);
+      cb(event)
+    };
+  
+    this.cs.onerror = (error) => {
+      console.log("Socket Error: ", error);
+    };
+  };
   handleNewMessage(event){
     // console.log(event);
     let data = event.data;

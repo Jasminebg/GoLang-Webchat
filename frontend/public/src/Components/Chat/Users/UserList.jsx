@@ -11,7 +11,9 @@ class  UserList extends Component {
         <div className="user-list">
           <p className="usersLabel"> Users:</p>
            {this.props.userList && this.props.userList.map((user, index) => 
-          <p key={index} className="user" style={{ color: "#"+user.color }}>{user.name}</p>
+          <p key={index} className="user" style={{ color: "#"+user.color }}>
+            {user.name}
+            </p>
         )}
         </div>
       </div>

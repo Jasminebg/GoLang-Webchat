@@ -180,7 +180,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 
 	case JoinRoomPrivate:
 		client.handleJoinRoomPrivateMessage(message)
-
 	}
 }
 func (client *Client) handleJoinRoomMessage(message Message) {
