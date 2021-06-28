@@ -100,7 +100,7 @@ func (client *Client) Write() {
 			}
 			fmt.Println("unmarshal")
 			fmt.Println(ms)
-			fmt.Println(ms.Message)
+			// fmt.Println(ms.Message)
 
 			n := len(client.send)
 			for i := 0; i < n; i++ {
@@ -170,6 +170,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		// message.Color = client.Color
 		if room := client.Pool.findRoomByID(message.TargetId); room != nil {
 			room.broadcast <- &message
+			fmt.Println(room)
 		}
 
 	case JoinRoom:
@@ -206,7 +207,7 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	if target == nil {
 		return
 	}
-	roomName := message.Message + client.ID.String()
+	roomName := target.User + " " + client.User + " PM"
 
 	client.joinRoom(roomName, target)
 	target.joinRoom(roomName, client)
@@ -224,7 +225,12 @@ func (client *Client) joinRoom(roomName string, sender *Client) {
 	if !client.isInRoom(room) {
 		client.rooms[room] = true
 		room.register <- client
-		client.notifyRoomJoined(room, sender)
+		if sender == nil {
+			client.notifyRoomJoined(room)
+		} else {
+			client.notifyPrivateRoomJoined(room, sender)
+		}
+
 	}
 }
 
@@ -236,7 +242,7 @@ func (client *Client) isInRoom(room *Room) bool {
 
 }
 
-func (client *Client) notifyRoomJoined(room *Room, sender *Client) {
+func (client *Client) notifyRoomJoined(room *Room) {
 	message := Message{
 		Action:   RoomJoined,
 		Target:   room.Name,
@@ -247,6 +253,28 @@ func (client *Client) notifyRoomJoined(room *Room, sender *Client) {
 		Uid:   client.ID.String(),
 	}
 	client.send <- message.encode()
+
+}
+func (client *Client) notifyPrivateRoomJoined(room *Room, sender *Client) {
+	message := Message{
+		Action:   RoomJoined,
+		Target:   room.Name,
+		TargetId: room.ID.String(),
+		// Sender: client,
+		User:  client.User,
+		Color: client.Color,
+		Uid:   client.ID.String(),
+	}
+	client.send <- message.encode()
+
+	userMessage := &Message{
+		Action:   userJoinedRoom,
+		User:     sender.GetName(),
+		Color:    sender.GetColor(),
+		Uid:      sender.GetID(),
+		TargetId: room.ID.String(),
+	}
+	client.send <- userMessage.encode()
 
 }
 

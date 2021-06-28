@@ -68,12 +68,10 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 
 }
 func (room *Room) broadcastToClientsInRoom(message []byte) {
+	fmt.Println(room.clients)
 	for client := range room.clients {
 		client.send <- message
-		// fmt.Println(client)
-		// fmt.Println("broadcast")
 	}
-
 }
 
 func (room *Room) listClientsinRoom(client *Client) {
@@ -85,11 +83,8 @@ func (room *Room) listClientsinRoom(client *Client) {
 				Color:    otherclient.GetColor(),
 				Uid:      otherclient.GetID(),
 				TargetId: room.ID.String(),
-				// Private:   room.Private,
 			}
 			client.send <- message.encode()
-			fmt.Println(client)
-			fmt.Println("broadcast clients in room")
 
 		}
 	}
@@ -101,7 +96,6 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		Target:    room.Name,
 		TargetId:  room.ID.String(),
 		Timestamp: time.Now().Format(time.RFC822),
-		// Private:   room.Private,
 	}
 	room.broadcastToClientsInRoom(message.encode())
 

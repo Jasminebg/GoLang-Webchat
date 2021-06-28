@@ -4,14 +4,12 @@ import "./UserList.scss"
 class  UserList extends Component {
   
  render() { 
-  // console.log("userlist");
-  //  console.log(this.props.userList);
     return (
       <div className="UserList">
         <div className="user-list">
           <p className="usersLabel"> Users:</p>
            {this.props.userList && this.props.userList.map((user, index) => 
-          <p key={index} className="user" style={{ color: "#"+user.color }}>
+          <p key={index} className="user" style={{ color: "#"+user.color }} onClick={()=> this.props.privateMessage(user.id)}>
             {user.name}
             </p>
         )}
