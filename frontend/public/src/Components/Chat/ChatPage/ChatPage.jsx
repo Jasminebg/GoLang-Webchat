@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import { Redirect } from 'react-router-dom';
 import ChatSocket from '../../../api/ChatSocket';
-import "./ChatPage"
+import "./ChatPage.scss"
 import ChatHistory from "../ChatHistory";
 import ChatInput from "../ChatInput";
 import UserList from "../Users";
@@ -101,21 +101,23 @@ class ChatPage extends Component {
       }
       this.updateState();
     }
-  }
+  };
   handleUserJoinedRoom(msg){
     let user = {
       name: msg.user,
       id: msg.id,
       color: msg.color
     };
-  this.state.rooms[msg.roomid].users.push(user)
-  const keys = Object.keys(this.state.rooms);
-  for (let i =0; i< this.state.rooms[msg.roomid].users.length;i++){
-    if(typeof this.state.rooms[keys[i]] !== "undefined"){
-     this.state.rooms[keys[i]].users.sort();
+    this.state.rooms[msg.roomid].users.push(user)
+
+    if( this.state.rooms[msg.roomid].users.length > 0){
+      this.state.rooms[msg.roomid].users.sort( (a,b) =>{
+        if(a.name < b.name){return -1;}
+        if(a.name > b.name){return 1;}
+        {return 0;}
+      } );
     }
-  }
-  }
+  };
   handleChatMessage(msg){
    if (typeof this.state.rooms[msg.roomid] !== "undefined"){
     let message = {
@@ -135,7 +137,6 @@ class ChatPage extends Component {
     };
     this.state.userList.push(user);
     
-
   };
   handleRoomJoined(msg){
     let user = {
@@ -157,13 +158,20 @@ class ChatPage extends Component {
             [msg.roomid]: room
         }
      });    
-     console.log(user)
-     console.log("roomjoined");
     } else {
       this.state.rooms[msg.roomid].users.push(user);
 
     }
-    console.log(this.state.rooms[msg.roomid])
+    console.log(this.state.rooms[msg.roomid]);
+ 
+    if( this.state.rooms[msg.roomid].users.length > 0){
+      this.state.rooms[msg.roomid].users.sort( (a,b) =>{
+        if(a.name < b.name){return -1;}
+        if(a.name > b.name){return 1;}
+        {return 0;}
+      } );
+    }
+    console.log(this.state.rooms[msg.roomid]);
   };
 
   handleUserLeft(msg){
@@ -177,14 +185,14 @@ class ChatPage extends Component {
 
   componentWillUnmount(){
     this._chatSocket.closeSocket();
-  }
+  };
 
   
   handleLogout(){
     auth.logout(()=> {
       this.props.history.push("/")
     })
-  }
+  };
 
   send(event, room){
     if(event.keyCode === 13 && event.target.value !== "") {
@@ -192,29 +200,28 @@ class ChatPage extends Component {
       console.log(event.target.value, room);
       event.target.value = "";
     }
-  }
+  };
   findRoom(event){
     if(event.keyCode === 13 && event.target.value !== ""){
       this._chatSocket.joinRoom(event.target.value);
       this._chatSocket.roomInput = event.target.value;
       event.target.value = "";
     }
-  }
+  };
   updateState (){
     this.setState({
       rooms: this.state.rooms
     });
-    
-  }
+  };
   changeRoom= (roomID)=>{
     this.setState({
       room: this.state.rooms[roomID]
     });
-  }
+  };
   privateMessage=(room)=>{
     this._chatSocket.joinPrivateRoom(room);
     console.log(room);
-  }
+  };
     
   render() {
     if(!auth.isAuthenticated){
@@ -224,12 +231,19 @@ class ChatPage extends Component {
     return (
         <div className="ChatPage" >
           <Header roomName = {e=> this.findRoom(e)} currentRoom={this.state.room.name}/>
-            {/* add leave room button in Serverlist? */}
-          <ServerList rooms = {Object.values(this.state.rooms)} changeRoom={ this.changeRoom}/>
-            <div className = "roomPage"> 
-              <UserList userList={this.state.room.users} privateMessage={this.privateMessage}/>
-              <ChatHistory chatHistory={this.state.room.messages}></ChatHistory>
-              <ChatInput send={e=> this.send(e, this.state.room)}/>
+            {/* add leave room button in Serverlist? 
+  // background-color: #2c2e33;*/}
+            <div className="chatBody"> 
+              <div className = "serverList"> 
+                <ServerList rooms = {Object.values(this.state.rooms)} changeRoom={ this.changeRoom}/>
+              </div>
+              <div className = "roomPage"> 
+                <ChatHistory chatHistory={this.state.room.messages}></ChatHistory>
+                <ChatInput send={e=> this.send(e, this.state.room) } roomName={this.state.room.name}/>
+              </div>
+              <div className = "usersList"> 
+                <UserList userList={this.state.room.users} privateMessage={this.privateMessage}/>
+              </div>
             </div>
         </div>
     )

@@ -3,11 +3,13 @@ import "./ServerList.scss";
 
 class ServerList extends Component {
   render() {
-    // console.log("Servers");
-    // console.log(this.props.rooms);
-
     // gets messages from app.js through props
-
+    // document.addEventListener("contextmenu", (event) => {
+    //   event.preventDefault();
+    //   const xPos = event.pageX + "px";
+    //   const yPos = event.pageY + "px";
+    //   //
+    // });
     return (
       // <div className="ServerIcons" onClick={}> A </div> 
       <div className="Servers">

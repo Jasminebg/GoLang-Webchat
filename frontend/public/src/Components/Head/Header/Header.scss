@@ -1,5 +1,6 @@
 .header {
-  position:fixed;
+  min-width:600px;
+  position:absolute;
   background-color: #2F3136;
   z-index: 999;
   border-bottom: 1px solid;
@@ -28,7 +29,7 @@
 
   .logout-button {
     position:absolute;
-    right:5%;
+    right:10px;
     width:100px;
     padding: 4px 10px 4px 10px;
     background-color: #36393F;
@@ -46,7 +47,7 @@
     position:absolute;
     // float: left;
     width:150px;
-    left:5%;
+    left:10px;
     // padding: 10px ;
     // margin: 0px 10px;
     background-color: #40444B;

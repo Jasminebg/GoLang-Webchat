@@ -1,7 +1,9 @@
 .ChatHistory {
   position:fixed;
-  height: 100%;
-  width: 100%;
+  z-index:0;
+  max-height: 100%;
+  max-width: 100%;
+  // width: 80%;
   background-color: #36393F;
   h2 {
     margin: 0;
@@ -19,9 +21,9 @@
 }
 
 #history {
-  width: 80%;
-  padding: 20px;
-  margin: auto;
+  width: 75%;
+  padding: 25px 20px;
+  // margin: auto;
 }
 
 .disable-scrollbars::-webkit-scrollbar {
