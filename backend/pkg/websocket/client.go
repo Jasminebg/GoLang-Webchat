@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -98,9 +97,6 @@ func (client *Client) Write() {
 			var ms Message
 			if err := json.Unmarshal(message, &ms); err != nil {
 			}
-			fmt.Println("unmarshal")
-			fmt.Println(ms)
-			// fmt.Println(ms.Message)
 
 			n := len(client.send)
 			for i := 0; i < n; i++ {
@@ -170,8 +166,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		// message.Color = client.Color
 		if room := client.Pool.findRoomByID(message.TargetId); room != nil {
 			room.broadcast <- &message
-			// fmt.Println("send message")
-			// fmt.Println(room, message)
 		}
 
 	case JoinRoom:
