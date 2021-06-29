@@ -63,6 +63,7 @@ class ChatSocket{
         roomid:room.ID,
         room:room.name
       }));
+      // console.log(msg, room);
       
     }
   }

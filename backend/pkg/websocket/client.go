@@ -170,7 +170,8 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		// message.Color = client.Color
 		if room := client.Pool.findRoomByID(message.TargetId); room != nil {
 			room.broadcast <- &message
-			fmt.Println(room)
+			// fmt.Println("send message")
+			// fmt.Println(room, message)
 		}
 
 	case JoinRoom:
@@ -207,7 +208,7 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	if target == nil {
 		return
 	}
-	roomName := target.User + " " + client.User + " PM"
+	roomName := target.User + " and " + client.User + " PMs"
 
 	client.joinRoom(roomName, target)
 	target.joinRoom(roomName, client)
@@ -225,11 +226,11 @@ func (client *Client) joinRoom(roomName string, sender *Client) {
 	if !client.isInRoom(room) {
 		client.rooms[room] = true
 		room.register <- client
-		if sender == nil {
-			client.notifyRoomJoined(room)
-		} else {
-			client.notifyPrivateRoomJoined(room, sender)
-		}
+		client.notifyRoomJoined(room)
+		// if sender == nil {
+		// } else {
+		// 	client.notifyPrivateRoomJoined(room, sender)
+		// }
 
 	}
 }
@@ -267,14 +268,14 @@ func (client *Client) notifyPrivateRoomJoined(room *Room, sender *Client) {
 	}
 	client.send <- message.encode()
 
-	userMessage := &Message{
-		Action:   userJoinedRoom,
-		User:     sender.GetName(),
-		Color:    sender.GetColor(),
-		Uid:      sender.GetID(),
-		TargetId: room.ID.String(),
-	}
-	client.send <- userMessage.encode()
+	// userMessage := &Message{
+	// 	Action:   userJoinedRoom,
+	// 	User:     sender.GetName(),
+	// 	Color:    sender.GetColor(),
+	// 	Uid:      sender.GetID(),
+	// 	TargetId: room.ID.String(),
+	// }
+	// client.send <- userMessage.encode()
 
 }
 

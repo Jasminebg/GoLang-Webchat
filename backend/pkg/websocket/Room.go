@@ -55,10 +55,20 @@ func (room *Room) RunRoom() {
 func (room *Room) registerClientInRoom(client *Client) {
 	if !room.Private {
 		room.notifyClientJoined(client)
-		room.clients[client] = true
-		room.listClientsinRoom(client)
 
+	} else {
+
+		message := &Message{
+			Action:   userJoinedRoom,
+			User:     client.GetName(),
+			Color:    client.GetColor(),
+			Uid:      client.GetID(),
+			TargetId: room.ID.String(),
+		}
+		room.broadcastToClientsInRoom(message.encode())
 	}
+	room.clients[client] = true
+	room.listClientsinRoom(client)
 
 }
 func (room *Room) unregisterClientInRoom(client *Client) {
@@ -68,8 +78,10 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 
 }
 func (room *Room) broadcastToClientsInRoom(message []byte) {
-	fmt.Println(room.clients)
+	// fmt.Println("room broadcast")
+	// fmt.Println(len(room.clients))
 	for client := range room.clients {
+		// fmt.Println(client)
 		client.send <- message
 	}
 }
@@ -77,6 +89,7 @@ func (room *Room) broadcastToClientsInRoom(message []byte) {
 func (room *Room) listClientsinRoom(client *Client) {
 	for otherclient := range room.clients {
 		if otherclient.GetID() != client.GetID() {
+			fmt.Println("list clients", otherclient, client)
 			message := &Message{
 				Action:   userJoinedRoom,
 				User:     otherclient.GetName(),
