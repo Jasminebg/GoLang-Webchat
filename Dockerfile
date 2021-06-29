@@ -3,13 +3,13 @@ FROM golang:alpine as builder
 RUN apk update && apk add --no-cache git
 RUN mkdir /build 
 ADD . /build/
-WORKDIR /build/backend
+WORKDIR /build
 RUN go get -d -v
-RUN go build -o deployment-demo .
+RUN go build -o backend .
 # Stage 2
 FROM alpine
 RUN adduser -S -D -H -h /app appuser
 USER appuser
 COPY --from=builder /build/ /app/
 WORKDIR /app
-CMD ["./deployment-demo"]
+CMD ["./backend"]
