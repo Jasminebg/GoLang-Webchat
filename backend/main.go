@@ -27,10 +27,10 @@ func main() {
 
 	fs := http.FileServer(http.Dir("./build"))
 	http.Handle("/", fs)
-	if !(port == "") {
-		log.Fatal(http.ListenAndServe(":"+port, nil))
-	} else {
-		log.Fatal(http.ListenAndServe(":"+"8080", nil))
-	}
-	// log.Fatal(http.ListenAndServe(*addr, nil))
+	// if !(port == "") {
+	// 	log.Fatal(http.ListenAndServe(":"+port, nil))
+	// } else {
+	// 	log.Fatal(http.ListenAndServe(":"+"8080", nil))
+	// }
+	log.Fatal(http.ListenAndServe(*addr, nil))
 }
