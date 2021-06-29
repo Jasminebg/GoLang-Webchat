@@ -16,8 +16,6 @@ class LoginPage extends Component {
     this.setState({
       [e.target.name]: e.target.value
     });
-    // console.log(/^#?(([0-9a-fA-F]{2}){3}|([0-9a-fA-F]){3})$/i.test(this.state.color));
-    // console.log(this.state.colour);
   }
 
 
@@ -53,17 +51,6 @@ class LoginPage extends Component {
         this.submitLogin();
       }
     }
-
-    // checkColor=()=>{
-    //   if(/^#?([0-9A-F]{6})$/i.test(this.state.colour)){
-    //     return true;
-    //   }
-    //   this.setState({
-    //     colour:"E92750"
-    //   }, () => console.log(this.state.colour) );
-    //   return true;
-      
-    // }
 
     keyPressed =(event)=>{
       if (event.key === "Enter"){

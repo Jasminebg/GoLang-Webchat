@@ -233,8 +233,7 @@ class ChatPage extends Component {
     return (
         <div className="ChatPage" >
           <Header roomName = {e=> this.findRoom(e)} currentRoom={this.state.room.name}/>
-            {/* add leave room button in Serverlist? 
-  // background-color: #2c2e33;*/}
+            {/* add leave room button in Serverlist? */}
             <div className="chatBody"> 
               <div className = "serverList"> 
                 <ServerList rooms = {Object.values(this.state.rooms)} changeRoom={ this.changeRoom}/>
