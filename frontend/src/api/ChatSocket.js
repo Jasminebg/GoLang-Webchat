@@ -1,27 +1,8 @@
 class ChatSocket{
-  _socketEndpoint;
-  _socket;
-  users = [];
-  user= {
-    username: this.userName,
-    userID:""
-  };
-  // roomInput;
-  rooms = {};
-  room = {
-    name:"",
-    ID: "",
-    messages:[],
-    users:[]
-  };
   cs;
 
   constructor( userName, userColour){
-    // this._socketEndpoint = `${socketEndpoint}?user=${userName}&userColour=${userColour}&userId=${userId}`;
-    // this._socket = connect ? new WebSocket(this._socketEndpoint):null;
     this.cs = new WebSocket(`ws://localhost:8080/ws?user=${userName}&userColour=${userColour}`)
-    // this.cs.addEventListener('open', (event) => {this.createSocket(event)});
-    // this.cs.addEventListener('message', (event) => {this.handleNewMessage(event)});
 
   }
   connect(cb) {
@@ -45,15 +26,6 @@ class ChatSocket{
     };
   };
 
-  handleUserLeft(msg){
-    for (let i =0; i< this.rooms[msg.roomid].users.length;i++){
-      if (this.rooms[msg.roomid].users[i].id === msg.id){
-        this.rooms[msg.roomid].users.splice(i,1);
-      }
-    }
-    // delete this.rooms[msg.roomID].users
-
-  };
 
   sendMessage(room, msg){
     if (msg !== ""){
@@ -62,9 +34,7 @@ class ChatSocket{
         message:msg,
         roomid:room.ID,
         room:room.name
-      }));
-      // console.log(msg, room);
-      
+      }));      
     }
   }
 
@@ -81,8 +51,6 @@ class ChatSocket{
 
   joinRoom(roomName){
     this.cs.send(JSON.stringify({action:'join-room', message:roomName}))
-    // this.room.name = roomName;
-    // this.roomInput="";
   };
   leaveRoom(room){
     this.cs.send(JSON.stringify({action:'leave-room', message:room}))
