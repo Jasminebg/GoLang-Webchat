@@ -10,6 +10,6 @@ RUN go build -o backend .
 FROM alpine
 RUN adduser -S -D -H -h /app appuser
 USER appuser
-COPY --from=builder /build/ /app/
+COPY --from=builder /build/backend/ /app/
 WORKDIR /app
 CMD ["./backend"]
