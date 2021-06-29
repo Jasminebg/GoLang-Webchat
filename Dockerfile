@@ -3,7 +3,7 @@ FROM golang:alpine as builder
 RUN apk update && apk add --no-cache git
 RUN mkdir /build 
 ADD . /build/
-WORKDIR /build
+WORKDIR /build/backend
 RUN go get -d -v
 RUN go build -o backend .
 # Stage 2
