@@ -5,9 +5,8 @@ RUN mkdir /app
 ADD . /app/ 
 WORKDIR /app/backend 
 RUN go mod download
-RUN go build -v
-RUN ls
-CMD ["/app/Golang-Webchat"]
+RUN go build -o backend
+CMD ["./backend"]
 # FROM golang:alpine as builder
 # RUN apk update && apk add --no-cache git
 # RUN mkdir /build 
