@@ -73,8 +73,6 @@ class ChatPage extends Component {
 
     for (let i = 0; i < data.length; i++){
       let msg = JSON.parse(data[i]);
-      console.log("handlenewmessage");
-      console.log(msg);
       switch (msg.action){
         case "send-message":
           this.handleChatMessage(msg);
@@ -198,7 +196,6 @@ class ChatPage extends Component {
   send(event, room){
     if(event.keyCode === 13 && event.target.value !== "") {
       this._chatSocket.sendMessage(room, event.target.value);
-      console.log(event.target.value, room);
       event.target.value = "";
     }
   };
@@ -221,7 +218,6 @@ class ChatPage extends Component {
   };
   privateMessage=(room)=>{
     this._chatSocket.joinPrivateRoom(room);
-    console.log(room);
   };
     
   render() {

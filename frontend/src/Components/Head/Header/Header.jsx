@@ -5,13 +5,6 @@ import "./Header.scss";
 
 class Header extends Component{
 
-  // handleChange = (e) => {
-  //   this.setState({
-  //     [e.target.name]: e.target.value
-  //   }
-  //   , () =>  console.log(this.state.roomName)
-  //   );
-  // }
 
   handleLogout(){
     auth.logout(() => {
