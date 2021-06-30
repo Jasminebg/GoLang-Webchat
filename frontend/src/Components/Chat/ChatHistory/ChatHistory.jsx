@@ -6,7 +6,6 @@ class ChatHistory extends Component {
 
   componentDidMount(){
     this.scrollToBottom();
-    console.log(this.props.chatHistory)
     this.forceUpdate();
   }
 
