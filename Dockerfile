@@ -7,7 +7,7 @@ WORKDIR /app/backend
 RUN go mod download
 RUN go build -v
 RUN ls
-CMD ["/app/realtime-chat-go-react"]
+CMD ["/app/Golang-Webchat"]
 # FROM golang:alpine as builder
 # RUN apk update && apk add --no-cache git
 # RUN mkdir /build 
