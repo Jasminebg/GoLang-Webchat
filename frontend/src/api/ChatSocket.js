@@ -2,7 +2,7 @@ class ChatSocket{
   cs;
 
   constructor( userName, userColour){
-    var host = location.origin.replace(/^http/, 'wss');
+    var host = window.location.origin.replace(/^http/, 'wss');
     this.cs = new WebSocket(`${host}?user=${userName}&userColour=${userColour}`)
 
   }
