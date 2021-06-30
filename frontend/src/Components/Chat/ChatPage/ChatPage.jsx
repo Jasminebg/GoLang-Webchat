@@ -9,7 +9,6 @@ import auth from '../../../authorization/auth';
 import Header from '../../Head/Header'
 import ServerList from '../ServerList'
 
-
 class ChatPage extends Component {
   _chatSocket;
  
