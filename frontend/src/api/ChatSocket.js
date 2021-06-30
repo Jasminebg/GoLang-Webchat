@@ -3,7 +3,8 @@ class ChatSocket{
 
   constructor( userName, userColour){
     var host = window.location.origin.replace(/^http/, 'ws');
-    this.cs = new WebSocket(`${host}ws?user=${userName}&userColour=${userColour}`)
+    console.log(host);
+    this.cs = new WebSocket(`wss://jsgochat.herokuapp.com/ws?user=${userName}&userColour=${userColour}`)
 
   }
   connect(cb) {
