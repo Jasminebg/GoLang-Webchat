@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/websocket"
 )
@@ -15,9 +16,10 @@ func main() {
 	// chatServer := ChatServer{make([]websocket.MessageData, 0)}
 	fmt.Println("Chat App v0.1")
 
-	// port := os.Getenv("PORT")
+	port := os.Getenv("PORT")
 	pool := websocket.NewPool()
 	go pool.Start()
+	portAddr := flag.String("addr", ":"+port, "http server address")
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websocket.ServeWs(pool, w, r)
@@ -27,10 +29,10 @@ func main() {
 
 	fs := http.FileServer(http.Dir("./build"))
 	http.Handle("/", fs)
-	// if !(port == "") {
-	// 	log.Fatal(http.ListenAndServe(":"+port, nil))
-	// } else {
-	// 	log.Fatal(http.ListenAndServe(":"+"8080", nil))
-	// }
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	if !(port == "") {
+		log.Fatal(http.ListenAndServe(*portAddr, nil))
+	} else {
+		log.Fatal(http.ListenAndServe(*addr, nil))
+	}
+	// log.Fatal(http.ListenAndServe(*addr, nil))
 }
