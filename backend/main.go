@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/config"
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/websocket"
 )
 
@@ -20,6 +21,10 @@ func main() {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websocket.ServeWs(pool, w, r)
 	})
+
+	config.ConnectDatabase()
+	MongoDB := config.MongoDBClient
+	defer MongoDB.Close()
 
 	// use below for deploying?
 

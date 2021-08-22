@@ -3,9 +3,9 @@ module github.com/Jasminebg/GoLang-Webchat/backend
 go 1.16
 
 require (
-	github.com/gin-gonic/contrib v0.0.0-20201101042839-6a891bf89f19 // indirect
-	github.com/gin-gonic/gin v1.7.2 // indirect
-	github.com/google/uuid v1.2.0 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
-	go.mongodb.org/mongo-driver v1.7.1 // indirect
+	github.com/google/uuid v1.2.0
+	github.com/gorilla/websocket v1.4.2
+	github.com/joho/godotenv v1.3.0
+	go.mongodb.org/mongo-driver v1.7.1
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
 )

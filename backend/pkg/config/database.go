@@ -14,6 +14,42 @@ import (
 
 var MongoDBClient *mongo.Client
 
+func ConnectDatabase() {
+	log.Println("Database connecting...")
+	// Set client options
+	// MONGODB_URI := os.Getenv("MONGODB_URI")
+	// if MONGODB_URI == "" {
+	// 	MONGODB_URI = "mongodb://localhost/chat"
+	// }
+	//getting DB user info from .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+	user := os.Getenv("USER")
+	pass := os.Getenv("PASS")
+
+	MONGODB_URI := fmt.Sprintf("mongodb+srv://%s:%s@webchat.kcpei.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", user, pass)
+	clientOptions := options.Client().ApplyURI(MONGODB_URI)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// connecting
+	client, err := mongo.Connect(ctx, clientOptions)
+	MongoDBClient = client
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// checking to see if the connection is fine
+	err = MongoDBClient.Ping(context.TODO(), nil)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("Database Connected.")
+}
+
 // func initDB(){
 // 	MONGODB_URI := os.Getenv("MONGODB_URI")
 // 	if MONGODB_URI == ""{
@@ -39,40 +75,3 @@ var MongoDBClient *mongo.Client
 // 	fmt.Println(databases)
 
 // }
-
-func ConnectDatabase() {
-	log.Println("Database connecting...")
-	// Set client options
-	// MONGODB_URI := os.Getenv("MONGODB_URI")
-	// if MONGODB_URI == "" {
-	// 	MONGODB_URI = "mongodb://localhost/chat"
-	// }
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
-	user := os.Getenv("USER")
-	pass := os.Getenv("PASS")
-
-	MONGODB_URI := fmt.Sprintf("mongodb+srv://%s:%s@webchat.kcpei.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", user, pass)
-	clientOptions := options.Client().ApplyURI(MONGODB_URI)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	// Connect to MongoDB
-	client, err := mongo.Connect(ctx, clientOptions)
-	MongoDBClient = client
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Check the connection
-	err = MongoDBClient.Ping(context.TODO(), nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("Database Connected.")
-	// 	defer client.Disconnect(ctx)
-}
