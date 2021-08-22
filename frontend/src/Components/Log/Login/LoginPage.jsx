@@ -32,11 +32,8 @@ class LoginPage extends Component {
             <label htmlFor="colour" className="form__label"> <span style={{fontStyle:'italic'}}>(Optional)</span> Name Colour  <span style={{color:'#E92750'}}>default: Red(E92750) </span>  </label>
           </div>
           <button className="login-button"  onKeyPress={this.onKeyPress} onClick={this.verifyInput}>Login</button>
-
         </div>
-
       </div>
-
     )
     }
 
