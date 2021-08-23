@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,7 +25,7 @@ func main() {
 
 	config.ConnectDatabase()
 	MongoDB := config.MongoDBClient
-	defer MongoDB.Close()
+	defer MongoDB.Disconnect(context.Background())
 
 	// use below for deploying?
 
