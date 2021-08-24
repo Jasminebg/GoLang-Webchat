@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/models"
+	"github.com/google/uuid"
 )
 
 type StateMessage struct {
@@ -186,6 +187,22 @@ func (pool *Pool) findRoomByName(name string) *Room {
 
 	return foundRoom
 }
+
+func (pool *Pool) runRoomFromRepository(name string) *Room {
+	var room *Room
+
+	dbRoom := pool.roomRepository.FindRoomByName(name)
+	if dbRoom != nil {
+		room = NewRoom(dbRoom.GetName(), dbRoom.GetPrivate())
+		room.ID, _ = uuid.Parse(dbRoom.GetId())
+
+		go room.RunRoom()
+		pool.rooms[room] = true
+	}
+
+	return room
+}
+
 func (pool *Pool) createRoom(name string, private bool) *Room {
 	room := NewRoom(name, private)
 	// ^ bool for privacy
