@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/models"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
@@ -208,7 +209,7 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	target.joinRoom(roomName, client)
 
 }
-func (client *Client) joinRoom(roomName string, sender *Client) {
+func (client *Client) joinRoom(roomName string, sender models.User) {
 	room := client.Pool.findRoomByName(roomName)
 	if room == nil {
 		room = client.Pool.createRoom(roomName, sender != nil)
@@ -220,7 +221,7 @@ func (client *Client) joinRoom(roomName string, sender *Client) {
 	if !client.isInRoom(room) {
 		client.rooms[room] = true
 		room.register <- client
-		client.notifyRoomJoined(room)
+		client.notifyRoomJoined(room, sender)
 		// if sender == nil {
 		// } else {
 		// 	client.notifyPrivateRoomJoined(room, sender)
@@ -237,7 +238,7 @@ func (client *Client) isInRoom(room *Room) bool {
 
 }
 
-func (client *Client) notifyRoomJoined(room *Room) {
+func (client *Client) notifyRoomJoined(room *Room, sender models.User) {
 	message := Message{
 		Action:   RoomJoined,
 		Target:   room.Name,
@@ -280,7 +281,7 @@ func (client *Client) GetColor() string {
 	return client.Color
 }
 
-func (client *Client) GetID() string {
+func (client *Client) GetId() string {
 	return client.ID.String()
 }
 

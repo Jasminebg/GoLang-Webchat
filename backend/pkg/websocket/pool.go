@@ -1,6 +1,10 @@
 package websocket
 
-import "time"
+import (
+	"time"
+
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/models"
+)
 
 type StateMessage struct {
 	Type       int        `json:"type"`
@@ -13,11 +17,14 @@ type UserInfo struct {
 }
 
 type Pool struct {
-	Register   chan *Client
-	Unregister chan *Client
-	Clients    map[*Client]bool
-	Broadcast  chan Message
-	rooms      map[*Room]bool
+	Register       chan *Client
+	Unregister     chan *Client
+	Clients        map[*Client]bool
+	Broadcast      chan Message
+	rooms          map[*Room]bool
+	users          []models.User
+	roomRepository models.RoomRepository
+	userRepository models.UserRepository
 	// _messageList []Message
 	// _messageLimit                 int
 	// _expirationLimitHrs           time.Duration
@@ -26,18 +33,23 @@ type Pool struct {
 
 // messageLimit int, expirationLimitHrs time.Duration, cleanupHeartbeatIntervalMins time.Duration
 
-func NewPool() *Pool {
-	return &Pool{
-		Register:   make(chan *Client),
-		Unregister: make(chan *Client),
-		Clients:    make(map[*Client]bool),
-		Broadcast:  make(chan Message),
-		rooms:      make(map[*Room]bool),
+func NewPool(roomRepository models.RoomRepository, userRepository models.UserRepository) *Pool {
+	pool := &Pool{
+		Register:       make(chan *Client),
+		Unregister:     make(chan *Client),
+		Clients:        make(map[*Client]bool),
+		Broadcast:      make(chan Message),
+		rooms:          make(map[*Room]bool),
+		roomRepository: roomRepository,
+		userRepository: userRepository,
 		// _messageList: []Message{},
 		// _messageLimit:                 messageLimit,
 		// _expirationLimitHrs:           expirationLimitHrs,
 		// _cleanupHeartbeatIntervalMins: cleanupHeartbeatIntervalMins,
 	}
+	pool.users = userRepository.GetAllUsers()
+
+	return pool
 }
 
 func (pool *Pool) Start() {
@@ -63,9 +75,13 @@ func (pool *Pool) Start() {
 
 func (pool *Pool) registerClient(client *Client) {
 
+	pool.userRepository.AddUser(client)
+
 	pool.notifyClientJoined(client)
 	pool.listClients(client)
 	pool.Clients[client] = true
+
+	pool.users = append(pool.users, client)
 
 }
 func (pool *Pool) unregisterClient(client *Client) {
@@ -73,6 +89,15 @@ func (pool *Pool) unregisterClient(client *Client) {
 	if _, ok := pool.Clients[client]; ok {
 		delete(pool.Clients, client)
 		pool.notifyClientLeft(client)
+
+		for i, user := range pool.users {
+			if user.GetId() == client.GetId() {
+				pool.users = append(pool.users[:i], pool.users[i+1])
+
+			}
+		}
+		pool.userRepository.RemoveUser(client)
+
 	}
 
 }
@@ -103,11 +128,12 @@ func (pool *Pool) notifyClientLeft(client *Client) {
 	}
 }
 func (pool *Pool) listClients(client *Client) {
-	for existingClient := range pool.Clients {
+
+	for _, user := range pool.users {
 		message := &Message{
 			Action: userJoined,
 			// Sender:    existingClient,
-			User: existingClient.User,
+			Sender: user,
 			// Timestamp: time.Now().Format(time.RFC822),
 		}
 		client.send <- message.encode()

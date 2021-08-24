@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/config"
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Room struct {
@@ -28,12 +28,12 @@ func (room *Room) GetPrivate() bool {
 	return room.Private
 }
 
-// type RoomRepository struct {
-// 	MongoDB := config.MongoDBClient
-// }
+type RoomRepository struct {
+	MongoDB *mongo.Client
+}
 
-func AddRoom(room models.Room) {
-	collection := config.MongoDBClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("rooms")
+func (repo *RoomRepository) AddRoom(room models.Room) {
+	collection := repo.MongoDB.Database(os.Getenv("MONGODB_DATABASE")).Collection("rooms")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	_, registrationError := collection.InsertOne(ctx, bson.M{
@@ -47,8 +47,8 @@ func AddRoom(room models.Room) {
 	checkErr(registrationError)
 }
 
-func FindRoomByName(name string) models.Room {
-	collection := config.MongoDBClient.Database(os.Getenv("MONGODB_DATABASE")).Collection("rooms")
+func (repo *RoomRepository) FindRoomByName(name string) models.Room {
+	collection := repo.MongoDB.Database(os.Getenv("MONGODB_DATABASE")).Collection("rooms")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	var room Room

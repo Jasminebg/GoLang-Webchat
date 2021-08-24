@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/config"
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/repository"
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/websocket"
 )
 
@@ -15,17 +16,17 @@ func main() {
 
 	fmt.Println("Chat App ")
 
+	config.ConnectDatabase()
+	MongoDb := config.MongoDBClient
+	defer MongoDb.Disconnect(context.Background())
+
 	port := os.Getenv("PORT")
-	pool := websocket.NewPool()
+	pool := websocket.NewPool(&repository.RoomRepository{MongoDB: MongoDb}, &repository.UserRepository{MongoDB: MongoDb})
 	go pool.Start()
 
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websocket.ServeWs(pool, w, r)
 	})
-
-	config.ConnectDatabase()
-	MongoDB := config.MongoDBClient
-	defer MongoDB.Disconnect(context.Background())
 
 	// use below for deploying?
 

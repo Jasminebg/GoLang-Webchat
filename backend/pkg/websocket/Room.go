@@ -62,7 +62,7 @@ func (room *Room) registerClientInRoom(client *Client) {
 			Action:   userJoinedRoom,
 			User:     client.GetName(),
 			Color:    client.GetColor(),
-			Uid:      client.GetID(),
+			Uid:      client.GetId(),
 			TargetId: room.ID.String(),
 		}
 		room.broadcastToClientsInRoom(message.encode())
@@ -85,12 +85,12 @@ func (room *Room) broadcastToClientsInRoom(message []byte) {
 
 func (room *Room) listClientsinRoom(client *Client) {
 	for otherclient := range room.clients {
-		if otherclient.GetID() != client.GetID() {
+		if otherclient.GetId() != client.GetId() {
 			message := &Message{
 				Action:   userJoinedRoom,
 				User:     otherclient.GetName(),
 				Color:    otherclient.GetColor(),
-				Uid:      otherclient.GetID(),
+				Uid:      otherclient.GetId(),
 				TargetId: room.ID.String(),
 			}
 			client.send <- message.encode()
@@ -112,7 +112,7 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		Action:   userJoinedRoom,
 		User:     sender.GetName(),
 		Color:    sender.GetColor(),
-		Uid:      sender.GetID(),
+		Uid:      sender.GetId(),
 		Target:   room.Name,
 		TargetId: room.ID.String(),
 	}
@@ -126,4 +126,8 @@ func (room *Room) GetId() string {
 
 func (room *Room) GetName() string {
 	return room.Name
+}
+
+func (room *Room) GetPrivate() bool {
+	return room.Private
 }

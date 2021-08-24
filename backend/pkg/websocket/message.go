@@ -3,6 +3,8 @@ package websocket
 import (
 	"encoding/json"
 	"log"
+
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/models"
 )
 
 const SendMessage = "send-message"
@@ -27,7 +29,7 @@ type Message struct {
 	TargetId  string `json:"roomid"`
 	Private   bool   `json:"private"`
 	// Target    *Room   `json:"target"`
-	// Sender    *Client `json:"sender"`
+	Sender models.User `json:"sender"`
 }
 
 func (message *Message) encode() []byte {
@@ -36,4 +38,20 @@ func (message *Message) encode() []byte {
 		log.Println(err)
 	}
 	return json
+}
+
+func (message *Message) UnmarshalJSON(data []byte) error {
+	type Alias Message
+	msg := &struct {
+		Sender Client `json:"sender"`
+		*Alias
+	}{
+		Alias: (*Alias)(message),
+	}
+	if err := json.Unmarshal(data, &msg); err != nil {
+		return err
+	}
+	message.Sender = &msg.Sender
+	return nil
+
 }
