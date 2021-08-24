@@ -179,6 +179,11 @@ func (pool *Pool) findRoomByName(name string) *Room {
 			break
 		}
 	}
+
+	if foundRoom == nil {
+		foundRoom = pool.runRoomFromRepository(name)
+	}
+
 	return foundRoom
 }
 func (pool *Pool) createRoom(name string, private bool) *Room {
