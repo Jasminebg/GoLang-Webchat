@@ -1,11 +1,16 @@
 package websocket
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"time"
 
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/config"
 	"github.com/google/uuid"
 )
+
+var ctx = context.Background()
 
 const welcomeMessage = "%s joined the room"
 
@@ -33,6 +38,7 @@ func NewRoom(name string, private bool) *Room {
 }
 
 func (room *Room) RunRoom() {
+	go room.subscribeToRoomMessages()
 	for {
 		select {
 
@@ -44,7 +50,7 @@ func (room *Room) RunRoom() {
 
 		case message := <-room.broadcast:
 			message.Timestamp = time.Now().Format(time.RFC822)
-			room.broadcastToClientsInRoom(message.encode())
+			room.publishRoomMessage(message.encode())
 
 		}
 
@@ -65,7 +71,7 @@ func (room *Room) registerClientInRoom(client *Client) {
 			Uid:      client.GetId(),
 			TargetId: room.ID.String(),
 		}
-		room.broadcastToClientsInRoom(message.encode())
+		room.publishRoomMessage(message.encode())
 	}
 	room.clients[client] = true
 	room.listClientsinRoom(client)
@@ -77,6 +83,25 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 	}
 
 }
+
+func (room *Room) publishRoomMessage(message []byte) {
+	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
+
+	if err != nil {
+		log.Println(err)
+	}
+}
+func (room *Room) subscribeToRoomMessages() {
+	pubsub := config.Redis.Subscribe(ctx, room.GetName())
+
+	ch := pubsub.Channel()
+
+	for msg := range ch {
+		room.broadcastToClientsInRoom([]byte(msg.Payload))
+	}
+
+}
+
 func (room *Room) broadcastToClientsInRoom(message []byte) {
 	for client := range room.clients {
 		client.send <- message
@@ -106,7 +131,7 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		TargetId:  room.ID.String(),
 		Timestamp: time.Now().Format(time.RFC822),
 	}
-	room.broadcastToClientsInRoom(message.encode())
+	room.publishRoomMessage(message.encode())
 
 	joinMessage := &Message{
 		Action:   userJoinedRoom,
@@ -116,7 +141,7 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		Target:   room.Name,
 		TargetId: room.ID.String(),
 	}
-	room.broadcastToClientsInRoom(joinMessage.encode())
+	room.publishRoomMessage(joinMessage.encode())
 
 }
 

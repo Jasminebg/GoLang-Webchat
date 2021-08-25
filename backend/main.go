@@ -29,8 +29,6 @@ func main() {
 		websocket.ServeWs(pool, w, r)
 	})
 
-	// use below for deploying?
-
 	fs := http.FileServer(http.Dir("./build"))
 	http.Handle("/", fs)
 	if !(port == "") {
@@ -38,5 +36,4 @@ func main() {
 	} else {
 		log.Fatal(http.ListenAndServe(":"+"8080", nil))
 	}
-	// log.Fatal(http.ListenAndServe(*addr, nil))
 }

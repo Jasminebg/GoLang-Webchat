@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/config"
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/models"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -129,7 +130,7 @@ func ServeWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	if !ok || len(color[0]) < 1 {
 		color[0] = "E92750"
 	}
-
+	// log.Println(name, color)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -205,18 +206,24 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 	}
 	roomName := target.User + " and " + client.User + " PMs"
 
-	client.joinRoom(roomName, target)
-	target.joinRoom(roomName, client)
+	joinedRoom := client.joinRoom(roomName, target)
+
+	if joinedRoom != nil {
+		client.inviteTargetUser(target, joinedRoom)
+	}
+
+	// client.joinRoom(roomName, target)
+	// target.joinRoom(roomName, client)
 
 }
-func (client *Client) joinRoom(roomName string, sender models.User) {
+func (client *Client) joinRoom(roomName string, sender models.User) *Room {
 	room := client.Pool.findRoomByName(roomName)
 	if room == nil {
 		room = client.Pool.createRoom(roomName, sender != nil)
 	}
 
 	if sender == nil && room.Private {
-		return
+		return nil
 	}
 	if !client.isInRoom(room) {
 		client.rooms[room] = true
@@ -228,6 +235,7 @@ func (client *Client) joinRoom(roomName string, sender models.User) {
 		// }
 
 	}
+	return room
 }
 
 func (client *Client) isInRoom(room *Room) bool {
@@ -236,6 +244,20 @@ func (client *Client) isInRoom(room *Room) bool {
 	}
 	return false
 
+}
+
+func (client *Client) inviteTargetUser(target models.User, room *Room) {
+	inviteMessage := &Message{
+		Action:   JoinRoomPrivate,
+		Message:  target.GetId(),
+		Target:   room.Name,
+		TargetId: room.ID.String(),
+		Sender:   target,
+	}
+
+	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, inviteMessage.encode()).Err(); err != nil {
+		log.Println(err)
+	}
 }
 
 func (client *Client) notifyRoomJoined(room *Room, sender models.User) {

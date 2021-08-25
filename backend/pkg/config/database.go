@@ -22,8 +22,9 @@ func ConnectDatabase() {
 	// 	MONGODB_URI = "mongodb://localhost/chat"
 	// }
 	//getting DB user info from .env
-	err := godotenv.Load()
-	if err != nil {
+
+	if err := godotenv.Load(); err != nil {
+		log.Println("No Env Found")
 		log.Fatal(err)
 	}
 	user := os.Getenv("USER")
@@ -49,29 +50,3 @@ func ConnectDatabase() {
 
 	log.Println("Database Connected.")
 }
-
-// func initDB(){
-// 	MONGODB_URI := os.Getenv("MONGODB_URI")
-// 	if MONGODB_URI == ""{
-// 		MONGODB_URI = "mongodb://localhost/chat"
-// 	}
-// 	client, err := mongo.NewClient(options.Client().ApplyURI(MONGODB_URI))
-// 	if err != nil{
-// 		log.Fatal(err)
-// 	}
-
-// 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-// 	err - client.Connect(ctx)
-
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	defer client.Disconnect(ctx)
-
-// 	databases, err := client.ListDatabaseNames(ctx, bson.M{})
-// 	if err != nil {
-// 			log.Fatal(err)
-// 	}
-// 	fmt.Println(databases)
-
-// }

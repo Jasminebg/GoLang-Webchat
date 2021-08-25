@@ -1,8 +1,10 @@
 package websocket
 
 import (
-	"time"
+	"encoding/json"
+	"log"
 
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/config"
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/models"
 	"github.com/google/uuid"
 )
@@ -32,6 +34,8 @@ type Pool struct {
 	// _cleanupHeartbeatIntervalMins time.Duration
 }
 
+const PubSubGeneralChannel = "general"
+
 // messageLimit int, expirationLimitHrs time.Duration, cleanupHeartbeatIntervalMins time.Duration
 
 func NewPool(roomRepository models.RoomRepository, userRepository models.UserRepository) *Pool {
@@ -55,6 +59,7 @@ func NewPool(roomRepository models.RoomRepository, userRepository models.UserRep
 
 func (pool *Pool) Start() {
 	// go pool.CleanupHeartBeat()
+	go pool.listenPubSubChannel()
 	for {
 		select {
 		//connecting
@@ -78,7 +83,7 @@ func (pool *Pool) registerClient(client *Client) {
 
 	pool.userRepository.AddUser(client)
 
-	pool.notifyClientJoined(client)
+	pool.publishClientJoined(client)
 	pool.listClients(client)
 	pool.Clients[client] = true
 
@@ -89,45 +94,117 @@ func (pool *Pool) unregisterClient(client *Client) {
 
 	if _, ok := pool.Clients[client]; ok {
 		delete(pool.Clients, client)
-		pool.notifyClientLeft(client)
+		pool.publishClientLeft(client)
 
 		for i, user := range pool.users {
 			if user.GetId() == client.GetId() {
-				pool.users = append(pool.users[:i], pool.users[i+1])
+				pool.users = append(pool.users[:i], pool.users[i+1:]...)
 
 			}
 		}
 		pool.userRepository.RemoveUser(client)
+		pool.publishClientLeft(client)
 
 	}
 
 }
 
-func (pool *Pool) notifyClientJoined(client *Client) {
+func (pool *Pool) publishClientJoined(client *Client) {
 	message := &Message{
 		Action: userJoined,
-		// Sender:    client,
-		User:      client.User,
-		Uid:       client.ID.String(),
-		Color:     client.Color,
-		Timestamp: time.Now().Format(time.RFC822),
+		Sender: client,
+	}
+	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
+		log.Println(err)
+	}
+}
+
+func (pool *Pool) publishClientLeft(client *Client) {
+	message := &Message{
+		Action: UserLeft,
+		Sender: client,
+	}
+	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
+		log.Println(err)
+	}
+}
+
+func (pool *Pool) listenPubSubChannel() {
+	pubsub := config.Redis.Subscribe(ctx, PubSubGeneralChannel)
+	ch := pubsub.Channel()
+	for msg := range ch {
+		var message Message
+		if err := json.Unmarshal([]byte(msg.Payload), &message); err != nil {
+			log.Printf("Err on unmarshal %s", err)
+			return
+		}
+		switch message.Action {
+		case userJoined:
+			pool.handleUserJoined(message)
+		case UserLeft:
+			pool.handleUserLeft(message)
+		case JoinRoomPrivate:
+			pool.handleJoinRoomPrivateMessage(message)
+		}
+	}
+}
+
+func (pool *Pool) handleUserJoined(message Message) {
+	pool.users = append(pool.users, message.Sender)
+	pool.broadcastToClients(message.encode())
+}
+
+func (pool *Pool) handleUserLeft(message Message) {
+	for i, user := range pool.users {
+		if user.GetId() == message.Sender.GetId() {
+			pool.users = append(pool.users[:i], pool.users[i+1:]...)
+		}
 	}
 	pool.broadcastToClients(message.encode())
 }
 
-func (pool *Pool) notifyClientLeft(client *Client) {
-	for room := range client.rooms {
-		message := &Message{
-			Action: UserLeft,
-			// Sender:    client,
-			TargetId:  room.ID.String(),
-			User:      client.User,
-			Uid:       client.ID.String(),
-			Timestamp: time.Now().Format(time.RFC822),
-		}
-		pool.broadcastToClients(message.encode())
+func (pool *Pool) handleJoinRoomPrivateMessage(message Message) {
+	targetClient := pool.findClientByID(message.Message)
+	if targetClient != nil {
+		targetClient.joinRoom(message.Target, message.Sender)
 	}
 }
+func (pool *Pool) findUserByID(ID string) models.User {
+	var foundUser models.User
+	for _, client := range pool.users {
+		if client.GetId() == ID {
+			foundUser = client
+			break
+		}
+	}
+	return foundUser
+}
+
+// func (pool *Pool) notifyClientJoined(client *Client) {
+// 	message := &Message{
+// 		Action: userJoined,
+// 		// Sender:    client,
+// 		User:      client.User,
+// 		Uid:       client.ID.String(),
+// 		Color:     client.Color,
+// 		Timestamp: time.Now().Format(time.RFC822),
+// 	}
+// 	pool.broadcastToClients(message.encode())
+// }
+
+// func (pool *Pool) notifyClientLeft(client *Client) {
+// 	for room := range client.rooms {
+// 		message := &Message{
+// 			Action: UserLeft,
+// 			// Sender:    client,
+// 			TargetId:  room.ID.String(),
+// 			User:      client.User,
+// 			Uid:       client.ID.String(),
+// 			Timestamp: time.Now().Format(time.RFC822),
+// 		}
+// 		pool.broadcastToClients(message.encode())
+// 	}
+// }
 func (pool *Pool) listClients(client *Client) {
 
 	for _, user := range pool.users {

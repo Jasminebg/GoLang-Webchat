@@ -1,6 +1,10 @@
-version:'3.5'
+version: '3.5'
 
 services:
+  go-app:
+    build: .
+    ports:
+      - "8080:8080"
   redis:
     image: "redis:alpine"
     ports:
