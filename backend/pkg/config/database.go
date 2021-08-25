@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -23,10 +22,10 @@ func ConnectDatabase() {
 	// }
 	//getting DB user info from .env
 
-	if err := godotenv.Load(); err != nil {
-		log.Println("No Env Found")
-		log.Fatal(err)
-	}
+	// if err := godotenv.Load(); err != nil {
+	// 	log.Println("No Env Found")
+	// 	log.Fatal(err)
+	// }
 	user := os.Getenv("USER")
 	pass := os.Getenv("PASS")
 
