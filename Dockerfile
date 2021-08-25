@@ -1,12 +1,4 @@
-# Stage 1
-# FROM golang:alpine as builder
-# RUN apk add bash ca-certificates git gcc g++ libc-dev
-# RUN mkdir /app 
-# ADD . /app/ 
-# WORKDIR /app/backend 
-# RUN go mod download
-# RUN go build -o backend
-# CMD ["./backend"]
+
 FROM golang:alpine as builder
 RUN apk update && apk add --no-cache git
 RUN mkdir /build 
