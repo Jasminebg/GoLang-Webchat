@@ -19,6 +19,7 @@ func main() {
 	config.ConnectDatabase()
 	MongoDb := config.MongoDBClient
 	defer MongoDb.Disconnect(context.Background())
+	config.CreateRedisClient()
 
 	port := os.Getenv("PORT")
 	pool := websocket.NewPool(&repository.RoomRepository{MongoDB: MongoDb}, &repository.UserRepository{MongoDB: MongoDb})

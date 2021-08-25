@@ -206,6 +206,7 @@ func (pool *Pool) runRoomFromRepository(name string) *Room {
 func (pool *Pool) createRoom(name string, private bool) *Room {
 	room := NewRoom(name, private)
 	// ^ bool for privacy
+	pool.roomRepository.AddRoom(room)
 	go room.RunRoom()
 	pool.rooms[room] = true
 
