@@ -1,9 +1,11 @@
-build:
-  docker:
-    web: Dockerfile
-    worker:
-       dockerfile: Dockerfile
-redis:
-  image: "redis:alpine"
-  ports:
-    - "6364:6379"
+services:
+  web:
+    build:
+      docker:
+        web: Dockerfile
+        worker:
+          dockerfile: Dockerfile
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6364:6379"
