@@ -3,7 +3,7 @@ build:
     web: Dockerfile
     worker:
        dockerfile: Dockerfile
-  redis:
-    image: "redis:alpine"
-    ports:
-      - "6364:6379"
+redis:
+  image: "redis:alpine"
+  ports:
+    - "6364:6379"
