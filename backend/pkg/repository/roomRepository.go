@@ -53,9 +53,9 @@ func (repo *RoomRepository) FindRoomByName(name string) models.Room {
 
 	var room Room
 	//find room by name
-	err := collection.FindOne(ctx, bson.M{"roomName": name}).Decode(&room)
+	_ = collection.FindOne(ctx, bson.M{"roomName": name}).Decode(&room)
 
-	checkErr(err)
+	// checkErr(err)
 
 	//assign room id, name and private to returned struct, check for err
 	defer cancel()
