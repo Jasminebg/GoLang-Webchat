@@ -160,6 +160,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	message.Uid = client.ID.String()
 	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
+	message.Sender = client
 
 	switch message.Action {
 	case SendMessage:
@@ -212,12 +213,11 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 		client.inviteTargetUser(target, joinedRoom)
 	}
 
-	// client.joinRoom(roomName, target)
-	// target.joinRoom(roomName, client)
-
 }
 func (client *Client) joinRoom(roomName string, sender models.User) *Room {
 	room := client.Pool.findRoomByName(roomName)
+	// log.Println(room)
+	// log.Println(",")
 	if room == nil {
 		room = client.Pool.createRoom(roomName, sender != nil)
 	}
