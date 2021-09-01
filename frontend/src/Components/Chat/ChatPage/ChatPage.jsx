@@ -109,13 +109,7 @@ class ChatPage extends Component {
     this.state.rooms[msg.roomid].users.push(user)
 
     this.sortUsersinRoom(msg.roomid);
-    // if( this.state.rooms[msg.roomid].users.length > 0){
-    //   this.state.rooms[msg.roomid].users.sort( (a,b) =>{
-    //     if(a.name < b.name){return -1;}
-    //     if(a.name > b.name){return 1;}
-    //     {return 0;}
-    //   } );
-    // }
+
   };
   handleChatMessage(msg){
    if (typeof this.state.rooms[msg.roomid] !== "undefined"){
@@ -202,6 +196,7 @@ class ChatPage extends Component {
   };
   findRoom(event){
     if(event.keyCode === 13 && event.target.value !== ""){
+      console.log(event)
       this._chatSocket.joinRoom(event.target.value);
       this._chatSocket.roomInput = event.target.value;
       event.target.value = "";

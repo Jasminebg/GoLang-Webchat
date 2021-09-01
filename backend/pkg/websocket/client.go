@@ -70,6 +70,7 @@ func (client *Client) Read() {
 		var ms Message
 		if err := json.Unmarshal(jsonMessage, &ms); err != nil {
 		}
+		log.Print(jsonMessage)
 		client.handleNewMessage(jsonMessage)
 	}
 }
@@ -161,12 +162,10 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
 	message.Sender = client
-
+	log.Print(message)
 	switch message.Action {
 	case SendMessage:
-		// roomID := client.Pool.findRoomByName()
-		//is room only a local variable here?
-		// message.Color = client.Color
+
 		if room := client.Pool.findRoomByID(message.TargetId); room != nil {
 			room.broadcast <- &message
 		}

@@ -4,7 +4,7 @@ class ChatSocket{
   constructor( userName, userColour){
     // var host = window.location.origin.replace(/^http/, 'ws');
     // console.log(host);
-    // this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColour=${cd frontenuserColour}`)
+    // this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColour=${userColour}`)
 
     this.cs = new WebSocket(`wss://jsgochat.herokuapp.com/ws?user=${userName}&userColour=${userColour}`)
 
@@ -54,6 +54,7 @@ class ChatSocket{
   }
 
   joinRoom(roomName){
+    console.log(roomName)
     this.cs.send(JSON.stringify({action:'join-room', message:roomName}))
   };
   leaveRoom(room){
