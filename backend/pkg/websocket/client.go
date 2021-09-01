@@ -70,6 +70,7 @@ func (client *Client) Read() {
 		var ms Message
 		if err := json.Unmarshal(jsonMessage, &ms); err != nil {
 		}
+		log.Print("jsonMessage: ")
 		log.Print(jsonMessage)
 		client.handleNewMessage(jsonMessage)
 	}
@@ -131,7 +132,6 @@ func ServeWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
 	if !ok || len(color[0]) < 1 {
 		color[0] = "E92750"
 	}
-	// log.Println(name, color)
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -162,6 +162,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
 	message.Sender = client
+	log.Print("message: ")
 	log.Print(message)
 	switch message.Action {
 	case SendMessage:
@@ -215,8 +216,7 @@ func (client *Client) handleJoinRoomPrivateMessage(message Message) {
 }
 func (client *Client) joinRoom(roomName string, sender models.User) *Room {
 	room := client.Pool.findRoomByName(roomName)
-	// log.Println(room)
-	// log.Println(",")
+
 	if room == nil {
 		room = client.Pool.createRoom(roomName, sender != nil)
 	}
