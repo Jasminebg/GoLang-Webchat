@@ -261,8 +261,9 @@ func (pool *Pool) findRoomByName(name string) *Room {
 	if foundRoom == nil {
 		foundRoom = pool.runRoomFromRepository(name)
 	}
-	log.Println("foundRoom: ")
-	log.Println(foundRoom)
+	if foundRoom.Name == "" {
+		return nil
+	}
 
 	return foundRoom
 }
