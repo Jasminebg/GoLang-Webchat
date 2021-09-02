@@ -1,7 +1,6 @@
 package config
 
 import (
-	"log"
 	"os"
 
 	"github.com/go-redis/redis/v8"
@@ -15,8 +14,6 @@ func CreateRedisClient() {
 	if err != nil {
 		panic(err)
 	}
-	log.Println(opt.Addr)
-	log.Println(opt.DB)
 
 	redis := redis.NewClient(opt)
 	Redis = redis

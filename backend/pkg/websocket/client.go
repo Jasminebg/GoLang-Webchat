@@ -70,8 +70,8 @@ func (client *Client) Read() {
 		var ms Message
 		if err := json.Unmarshal(jsonMessage, &ms); err != nil {
 		}
-		log.Print("jsonMessage: ")
-		log.Print(jsonMessage)
+		// log.Print("jsonMessage: ")
+		// log.Print(jsonMessage)
 		client.handleNewMessage(jsonMessage)
 	}
 }
@@ -162,8 +162,8 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
 	message.Sender = client
-	log.Print("message: ")
-	log.Print(message)
+	// log.Print("message: ")
+	// log.Print(message)
 	switch message.Action {
 	case SendMessage:
 
