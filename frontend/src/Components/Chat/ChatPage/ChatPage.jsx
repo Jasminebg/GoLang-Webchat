@@ -68,14 +68,15 @@ class ChatPage extends Component {
     }
   }
   handleNewMessage(event){
-    console.log(event)
+    console.log(event);
     let data = event.data;
-    console.log("data : ")
-    console.log(data)
+    console.log("data : ");
+    console.log(data);
     data = data.split(/\r?\n/);
     console.log("data : ")
-    console.log(data)
+    console.log(data);
     for (let i = 0; i < data.length; i++){
+      console.log(data[i]);
       let msg = JSON.parse(data[i]);
       // console.log(msg);
       switch (msg.action){
