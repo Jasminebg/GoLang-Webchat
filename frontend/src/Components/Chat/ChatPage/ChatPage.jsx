@@ -74,7 +74,7 @@ class ChatPage extends Component {
     winston.log(data)
     for (let i = 0; i < data.length; i++){
       let msg = JSON.parse(data[i]);
-      console.log(msg);
+      winston.log(msg);
       switch (msg.action){
         case "send-message":
           this.handleChatMessage(msg);
