@@ -51,7 +51,8 @@ class ChatPage extends Component {
     if ( auth.isAuthenticated()){
       this._chatSocket = new ChatSocket(auth.getUserName(), auth.getUserColour())
       this._chatSocket.connect((event) => {
-        this.handleSocketEvent(event)
+        console.log(event.data);
+        this.handleSocketEvent(event);
       });
     }
   }
@@ -70,10 +71,8 @@ class ChatPage extends Component {
   handleNewMessage(event){
     console.log(event);
     let data = event.data;
-    console.log("data : ");
-    console.log(data);
     data = data.split(/\r?\n/);
-    console.log("data : ")
+    console.log("data : ");
     console.log(data);
     for (let i = 0; i < data.length; i++){
       console.log(data[i]);
