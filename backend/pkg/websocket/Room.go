@@ -89,6 +89,8 @@ func (room *Room) publishRoomMessage(message []byte) {
 
 	if err != nil {
 		log.Println(err)
+		log.Println(message)
+		log.Println("publish ")
 	}
 }
 func (room *Room) subscribeToRoomMessages() {
