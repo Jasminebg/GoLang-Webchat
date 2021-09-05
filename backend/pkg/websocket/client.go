@@ -98,9 +98,9 @@ func (client *Client) Write() {
 				return
 			}
 			w.Write(message)
-			var ms Message
-			if err := json.Unmarshal(message, &ms); err != nil {
-			}
+			// var ms Message
+			// if err := json.Unmarshal(message, &ms); err != nil {
+			// }
 
 			n := len(client.send)
 			for i := 0; i < n; i++ {
