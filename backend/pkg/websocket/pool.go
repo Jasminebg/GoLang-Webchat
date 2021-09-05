@@ -221,6 +221,7 @@ func (pool *Pool) listClients(client *Client) {
 func (pool *Pool) broadcastToClients(message []byte) {
 
 	for client := range pool.Clients {
+		log.Println(message)
 		client.send <- message
 	}
 }

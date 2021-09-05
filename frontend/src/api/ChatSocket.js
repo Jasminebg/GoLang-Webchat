@@ -17,7 +17,6 @@ class ChatSocket{
     };
   
     this.cs.onmessage = (msg) => {
-      console.log(msg);
       cb(msg);
     };
   
