@@ -49,7 +49,7 @@ func (room *Room) RunRoom() {
 			room.unregisterClientInRoom(client)
 
 		case message := <-room.broadcast:
-			message.Timestamp = time.Now().Format(time.RFC822)
+			// message.Timestamp = time.Now().Format(time.RFC822)
 			room.publishRoomMessage(message.encode())
 
 		}
@@ -86,8 +86,8 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 
 func (room *Room) publishRoomMessage(message []byte) {
 	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
-	log.Println("room publish")
-	log.Println(message)
+	// log.Println("room publish")
+	// log.Println(message)
 
 	if err != nil {
 		log.Println(err)
