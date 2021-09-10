@@ -214,6 +214,8 @@ func (pool *Pool) listClients(client *Client) {
 			Sender: user,
 			// Timestamp: time.Now().Format(time.RFC822),
 		}
+		log.Println("list clients pool")
+		log.Println(message)
 		client.send <- message.encode()
 	}
 }

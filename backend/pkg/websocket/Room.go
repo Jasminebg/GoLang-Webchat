@@ -122,6 +122,8 @@ func (room *Room) listClientsinRoom(client *Client) {
 				Uid:      otherclient.GetId(),
 				TargetId: room.ID.String(),
 			}
+			log.Println("list clients")
+			log.Println(message)
 			client.send <- message.encode()
 
 		}
