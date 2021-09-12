@@ -89,8 +89,8 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 
 func (room *Room) publishRoomMessage(message []byte) {
 	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
-	// log.Println("room publish")
-	// log.Println(message)
+	log.Println("room publish")
+	log.Println(message)
 
 	if err != nil {
 		log.Println(err)
