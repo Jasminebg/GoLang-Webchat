@@ -68,7 +68,7 @@ func (client *Client) Read() {
 			break
 		}
 		var ms Message
-		if err := json.Unmarshal(message, &ms); err != nil {
+		if err := json.Unmarshal(jsonMessage, &ms); err != nil {
 		}
 		log.Println("client read")
 		log.Println(ms)
