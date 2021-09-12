@@ -214,8 +214,8 @@ func (pool *Pool) listClients(client *Client) {
 			Sender: user,
 			// Timestamp: time.Now().Format(time.RFC822),
 		}
-		log.Println("list clients pool")
-		log.Println(message)
+		// log.Println("list clients pool")
+		// log.Println(message)
 		client.send <- message.encode()
 	}
 }
@@ -223,8 +223,8 @@ func (pool *Pool) listClients(client *Client) {
 func (pool *Pool) broadcastToClients(message []byte) {
 
 	for client := range pool.Clients {
-		log.Println("broadcast")
-		log.Println(message)
+		// log.Println("broadcast")
+		// log.Println(message)
 		client.send <- message
 	}
 }

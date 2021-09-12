@@ -102,7 +102,7 @@ func (room *Room) subscribeToRoomMessages() {
 	pubsub := config.Redis.Subscribe(ctx, room.GetName())
 
 	ch := pubsub.Channel()
-
+	log.Println(ch)
 	for msg := range ch {
 		room.broadcastToClientsInRoom([]byte(msg.Payload))
 	}
