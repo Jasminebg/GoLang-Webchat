@@ -71,6 +71,8 @@ func (room *Room) registerClientInRoom(client *Client) {
 			Uid:      client.GetId(),
 			TargetId: room.ID.String(),
 		}
+		log.Println("register client")
+		log.Println(message)
 		room.publishRoomMessage(message.encode())
 	}
 	room.clients[client] = true
@@ -137,6 +139,8 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		TargetId:  room.ID.String(),
 		Timestamp: time.Now().Format(time.RFC822),
 	}
+	log.Println("client joined")
+	log.Println(message)
 	room.publishRoomMessage(message.encode())
 
 	joinMessage := &Message{
@@ -147,6 +151,8 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		Target:   room.Name,
 		TargetId: room.ID.String(),
 	}
+	log.Println("userjoined message")
+	log.Println(joinMessage)
 	room.publishRoomMessage(joinMessage.encode())
 
 }
