@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -71,8 +72,8 @@ func (room *Room) registerClientInRoom(client *Client) {
 			Uid:      client.GetId(),
 			TargetId: room.ID.String(),
 		}
-		log.Println("register client")
-		log.Println(message)
+		// log.Println("register client")
+		// log.Println(message)
 		room.publishRoomMessage(message.encode())
 	}
 	room.clients[client] = true
@@ -110,6 +111,11 @@ func (room *Room) subscribeToRoomMessages() {
 
 func (room *Room) broadcastToClientsInRoom(message []byte) {
 	for client := range room.clients {
+		var ms Message
+		if err := json.Unmarshal(message, &ms); err != nil {
+		}
+		log.Println("broadcasttoclientsinroom")
+		log.Println(ms)
 		client.send <- message
 	}
 }
@@ -124,8 +130,8 @@ func (room *Room) listClientsinRoom(client *Client) {
 				Uid:      otherclient.GetId(),
 				TargetId: room.ID.String(),
 			}
-			log.Println("list clients")
-			log.Println(message)
+			// log.Println("list clients")
+			// log.Println(message)
 			client.send <- message.encode()
 
 		}
@@ -139,8 +145,8 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		TargetId:  room.ID.String(),
 		Timestamp: time.Now().Format(time.RFC822),
 	}
-	log.Println("client joined")
-	log.Println(message)
+	// log.Println("client joined")
+	// log.Println(message)
 	room.publishRoomMessage(message.encode())
 
 	joinMessage := &Message{
@@ -151,8 +157,8 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		Target:   room.Name,
 		TargetId: room.ID.String(),
 	}
-	log.Println("userjoined message")
-	log.Println(joinMessage)
+	// log.Println("userjoined message")
+	// log.Println(joinMessage)
 	room.publishRoomMessage(joinMessage.encode())
 
 }
