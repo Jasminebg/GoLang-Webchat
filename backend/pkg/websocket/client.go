@@ -169,8 +169,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	case SendMessage:
 
 		if room := client.Pool.findRoomByID(message.TargetId); room != nil {
-			log.Println("find room by id")
-			log.Println(message)
 			room.broadcast <- &message
 		}
 
