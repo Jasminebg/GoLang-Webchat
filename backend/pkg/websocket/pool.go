@@ -138,6 +138,8 @@ func (pool *Pool) listenPubSubChannel() {
 			log.Printf("Err on unmarshal %s", err)
 			return
 		}
+		log.Println("listen pool")
+		log.Println(message)
 		switch message.Action {
 		case userJoined:
 			pool.handleUserJoined(message)

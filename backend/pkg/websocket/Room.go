@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -89,8 +90,13 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 }
 
 func (room *Room) publishRoomMessage(message []byte) {
-	log.Println("room publish")
-	log.Println(message)
+	// log.Println("room publish")
+	// log.Println(message)
+	var ms Message
+	if err := json.Unmarshal(message, &ms); err != nil {
+	}
+	log.Println("publish room")
+	log.Println(ms)
 	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
 	if err != nil {
 		log.Println(err)
