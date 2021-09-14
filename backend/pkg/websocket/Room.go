@@ -67,12 +67,13 @@ func (room *Room) registerClientInRoom(client *Client) {
 
 		message := &Message{
 			Action: userJoinedRoom,
-			// User:     client.GetName(),
-			// Color:    client.GetColor(),
-			// Uid:      client.GetId(),
-			Sender: client,
-			Room:   room,
-			// TargetId: room.ID.String(),
+			User:   client.GetName(),
+			Color:  client.GetColor(),
+			Uid:    client.GetId(),
+			// Sender: client,
+			// Room:   room,
+			Target:   room.Name,
+			TargetId: room.ID.String(),
 		}
 		// log.Println("register client")
 		// log.Println(message)
@@ -124,12 +125,13 @@ func (room *Room) listClientsinRoom(client *Client) {
 		if otherclient.GetId() != client.GetId() {
 			message := &Message{
 				Action: userJoinedRoom,
-				// User:     otherclient.GetName(),
-				// Color:    otherclient.GetColor(),
-				// Uid:      otherclient.GetId(),
-				Sender: otherclient,
-				// TargetId: room.ID.String(),
-				Room: room,
+				User:   otherclient.GetName(),
+				Color:  otherclient.GetColor(),
+				Uid:    otherclient.GetId(),
+				// Sender: otherclient,
+				Target:   room.Name,
+				TargetId: room.ID.String(),
+				// Room: room,
 			}
 			// log.Println("list clients")
 			// log.Println(message)
@@ -142,9 +144,9 @@ func (room *Room) notifyClientJoined(sender *Client) {
 	message := &Message{
 		Message: fmt.Sprintf(welcomeMessage, sender.GetName()),
 		Action:  SendMessage,
-		Room:    room,
-		// Target:    room.Name,
-		// TargetId:  room.ID.String(),
+		// Room:    room,
+		Target:    room.Name,
+		TargetId:  room.ID.String(),
 		Timestamp: time.Now().Format(time.RFC822),
 	}
 	// log.Println("client joined")
@@ -153,13 +155,13 @@ func (room *Room) notifyClientJoined(sender *Client) {
 
 	joinMessage := &Message{
 		Action: userJoinedRoom,
-		// User:     sender.GetName(),
-		// Color:    sender.GetColor(),
-		// Uid:      sender.GetId(),
-		Sender: sender,
-		Room:   room,
-		// Target:   room.Name,
-		// TargetId: room.ID.String(),
+		User:   sender.GetName(),
+		Color:  sender.GetColor(),
+		Uid:    sender.GetId(),
+		// Sender: sender,
+		// Room:   room,
+		Target:   room.Name,
+		TargetId: room.ID.String(),
 	}
 	// log.Println("userjoined message")
 	// log.Println(joinMessage)

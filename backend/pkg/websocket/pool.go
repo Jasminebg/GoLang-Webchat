@@ -112,7 +112,9 @@ func (pool *Pool) unregisterClient(client *Client) {
 func (pool *Pool) publishClientJoined(client *Client) {
 	message := &Message{
 		Action: userJoined,
-		Sender: client,
+		User:   client.User,
+		Uid:    client.ID.String(),
+		// Sender: client,
 	}
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
 		log.Println(err)
@@ -122,7 +124,9 @@ func (pool *Pool) publishClientJoined(client *Client) {
 func (pool *Pool) publishClientLeft(client *Client) {
 	message := &Message{
 		Action: UserLeft,
-		Sender: client,
+		User:   client.User,
+		Uid:    client.ID.String(),
+		// Sender: client,
 	}
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
 		log.Println(err)
@@ -152,13 +156,13 @@ func (pool *Pool) listenPubSubChannel() {
 }
 
 func (pool *Pool) handleUserJoined(message Message) {
-	pool.users = append(pool.users, message.Sender)
+	pool.users = append(pool.users, pool.findClientByID(message.Uid))
 	pool.broadcastToClients(message.encode())
 }
 
 func (pool *Pool) handleUserLeft(message Message) {
 	for i, user := range pool.users {
-		if user.GetId() == message.Sender.GetId() {
+		if user.GetId() == message.Uid {
 			pool.users = append(pool.users[:i], pool.users[i+1:]...)
 		}
 	}
@@ -166,9 +170,9 @@ func (pool *Pool) handleUserLeft(message Message) {
 }
 
 func (pool *Pool) handleJoinRoomPrivateMessage(message Message) {
-	targetClient := pool.findClientByID(message.Message)
+	targetClient := pool.findClientByID(message.Uid)
 	if targetClient != nil {
-		targetClient.joinRoom(message.Room.GetName(), message.Sender)
+		targetClient.joinRoom(message.Target, pool.findClientByID(message.Uid))
 	}
 }
 func (pool *Pool) findUserByID(ID string) models.User {
@@ -212,8 +216,10 @@ func (pool *Pool) listClients(client *Client) {
 	for _, user := range pool.users {
 		message := &Message{
 			Action: userJoined,
+			User:   user.GetName(),
+			Uid:    user.GetId(),
 			// Sender:    existingClient,
-			Sender: user,
+			// Sender: user,
 			// Timestamp: time.Now().Format(time.RFC822),
 		}
 		// log.Println("list clients pool")

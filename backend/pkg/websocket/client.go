@@ -158,17 +158,17 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		log.Printf("Error on unmarshal JSON message %s", err)
 		return
 	}
-	// message.User = client.User
-	// message.Uid = client.ID.String()
-	// message.Color = client.Color
+	message.User = client.User
+	message.Uid = client.ID.String()
+	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
-	message.Sender = client
+	// message.Sender = client
 	// log.Print("message: ")
 	// log.Print(message)
 	switch message.Action {
 	case SendMessage:
 
-		if room := client.Pool.findRoomByID(message.Room.GetId()); room != nil {
+		if room := client.Pool.findRoomByID(message.Target); room != nil {
 			room.broadcast <- &message
 		}
 
@@ -250,10 +250,12 @@ func (client *Client) inviteTargetUser(target models.User, room *Room) {
 	inviteMessage := &Message{
 		Action:  JoinRoomPrivate,
 		Message: target.GetId(),
-		Room:    room,
-		// Target:   room.Name,
-		// TargetId: room.ID.String(),
-		Sender: target,
+		User:    client.User,
+		Uid:     client.ID.String(),
+		// Room:    room,
+		Target:   room.Name,
+		TargetId: room.ID.String(),
+		// Sender: target,
 	}
 
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, inviteMessage.encode()).Err(); err != nil {
@@ -264,13 +266,13 @@ func (client *Client) inviteTargetUser(target models.User, room *Room) {
 func (client *Client) notifyRoomJoined(room *Room, sender models.User) {
 	message := Message{
 		Action: RoomJoined,
-		Room:   room,
-		// Target:   room.Name,
-		// TargetId: room.ID.String(),
-		Sender: client,
-		// User:  client.User,
-		// Color: client.Color,
-		// Uid:   client.ID.String(),
+		// Room:     room,
+		Target:   room.Name,
+		TargetId: room.ID.String(),
+		// Sender: client,
+		User:  client.User,
+		Color: client.Color,
+		Uid:   client.ID.String(),
 	}
 	client.send <- message.encode()
 
@@ -278,13 +280,13 @@ func (client *Client) notifyRoomJoined(room *Room, sender models.User) {
 func (client *Client) notifyPrivateRoomJoined(room *Room, sender *Client) {
 	message := Message{
 		Action: RoomJoined,
-		Room:   room,
-		// Target:   room.Name,
-		// TargetId: room.ID.String(),
-		Sender: client,
-		// User:  client.User,
-		// Color: client.Color,
-		// Uid:   client.ID.String(),
+		// Room:   room,
+		Target:   room.Name,
+		TargetId: room.ID.String(),
+		// Sender: client,
+		User:  client.User,
+		Color: client.Color,
+		Uid:   client.ID.String(),
 	}
 	client.send <- message.encode()
 
