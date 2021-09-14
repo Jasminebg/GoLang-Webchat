@@ -2,7 +2,6 @@ package websocket
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -50,9 +49,8 @@ func (room *Room) RunRoom() {
 			room.unregisterClientInRoom(client)
 
 		case message := <-room.broadcast:
-			// message.Timestamp = time.Now().Format(time.RFC822)
-			log.Println("room broadcast")
-			log.Println(message)
+			// log.Println("room broadcast")
+			// log.Println(message)
 			room.publishRoomMessage(message.encode())
 
 		}
@@ -90,13 +88,11 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 }
 
 func (room *Room) publishRoomMessage(message []byte) {
-	// log.Println("room publish")
-	// log.Println(message)
-	var ms Message
-	if err := json.Unmarshal(message, &ms); err != nil {
-	}
-	log.Println("publish room")
-	log.Println(ms)
+	// var ms Message
+	// if err := json.Unmarshal(message, &ms); err != nil {
+	// }
+	// log.Println("publish room")
+	// log.Println(ms)
 	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
 	if err != nil {
 		log.Println(err)

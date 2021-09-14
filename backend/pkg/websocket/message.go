@@ -35,10 +35,15 @@ type Message struct {
 func (message *Message) encode() []byte {
 	log.Println("message ")
 	log.Println(message)
+	log.Println(message.Sender)
+	log.Println(message.Sender.GetId())
+	log.Println(message.Sender.GetName())
 	jsonmessage, err := json.Marshal(message)
 	if err != nil {
+		log.Println("error ")
 		log.Println(err)
 	}
+	log.Println("jsonmsg ")
 	log.Println(jsonmessage)
 	return jsonmessage
 }
