@@ -31,37 +31,14 @@ type Message struct {
 }
 
 func (message *Message) encode() []byte {
-	log.Println("message ")
-	log.Println(message)
+	// log.Println("message ")
+	// log.Println(message)
 
 	jsonmessage, err := json.Marshal(message)
-	// jsonmessage, err := json.Marshal(struct {
-	// 	Message   string `json:"message"`
-	// 	User      string `json:"user"`
-	// 	Uid       string `json:"id"`
-	// 	Color     string `json:"color"`
-	// 	Timestamp string `json:"timestamp"`
-	// 	Action    string `json:"action"`
-	// 	Target    string `json:"room"`
-	// 	TargetId  string `json:"roomid"`
-	// 	Private   bool   `json:"private"`
-	// }{
-	// 	Message:   message.Message,
-	// 	User:      message.Sender.GetName(),
-	// 	Uid:       message.Sender.GetId(),
-	// 	Color:     message.Sender.GetColor(),
-	// 	Timestamp: message.Timestamp,
-	// 	Action:    message.Action,
-	// 	Target:    message.Room.GetName(),
-	// 	TargetId:  message.Room.GetId(),
-	// 	Private:   message.Private,
-	// })
 	if err != nil {
 		log.Println("error ")
 		log.Println(err)
 	}
-	log.Println("jsonmsg ")
-	log.Println(jsonmessage)
 	return jsonmessage
 }
 
@@ -74,8 +51,8 @@ func (message *Message) UnmarshalJSON(data []byte) error {
 		Alias: (*Alias)(message),
 	}
 	if err := json.Unmarshal(data, &msg); err != nil {
-		log.Println("message unmarshal ")
-		log.Println(&msg)
+		// log.Println("message unmarshal ")
+		// log.Println(&msg)
 		return err
 	}
 	// message.Sender = &msg.Sender

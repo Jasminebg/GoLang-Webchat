@@ -94,14 +94,13 @@ func (pool *Pool) unregisterClient(client *Client) {
 
 	if _, ok := pool.Clients[client]; ok {
 		delete(pool.Clients, client)
-		pool.publishClientLeft(client)
 
-		for i, user := range pool.users {
-			if user.GetId() == client.GetId() {
-				pool.users = append(pool.users[:i], pool.users[i+1:]...)
+		// for i, user := range pool.users {
+		// 	if user.GetId() == client.GetId() {
+		// 		pool.users = append(pool.users[:i], pool.users[i+1:]...)
 
-			}
-		}
+		// 	}
+		// }
 		pool.userRepository.RemoveUser(client)
 		pool.publishClientLeft(client)
 
@@ -186,31 +185,6 @@ func (pool *Pool) findUserByID(ID string) models.User {
 	return foundUser
 }
 
-// func (pool *Pool) notifyClientJoined(client *Client) {
-// 	message := &Message{
-// 		Action: userJoined,
-// 		// Sender:    client,
-// 		User:      client.User,
-// 		Uid:       client.ID.String(),
-// 		Color:     client.Color,
-// 		Timestamp: time.Now().Format(time.RFC822),
-// 	}
-// 	pool.broadcastToClients(message.encode())
-// }
-
-// func (pool *Pool) notifyClientLeft(client *Client) {
-// 	for room := range client.rooms {
-// 		message := &Message{
-// 			Action: UserLeft,
-// 			// Sender:    client,
-// 			TargetId:  room.ID.String(),
-// 			User:      client.User,
-// 			Uid:       client.ID.String(),
-// 			Timestamp: time.Now().Format(time.RFC822),
-// 		}
-// 		pool.broadcastToClients(message.encode())
-// 	}
-// }
 func (pool *Pool) listClients(client *Client) {
 
 	for _, user := range pool.users {
@@ -222,8 +196,6 @@ func (pool *Pool) listClients(client *Client) {
 			// Sender: user,
 			// Timestamp: time.Now().Format(time.RFC822),
 		}
-		// log.Println("list clients pool")
-		// log.Println(message)
 		client.send <- message.encode()
 	}
 }
@@ -231,8 +203,6 @@ func (pool *Pool) listClients(client *Client) {
 func (pool *Pool) broadcastToClients(message []byte) {
 
 	for client := range pool.Clients {
-		// log.Println("broadcast")
-		// log.Println(message)
 		client.send <- message
 	}
 }
