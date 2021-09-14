@@ -67,11 +67,6 @@ func (client *Client) Read() {
 			}
 			break
 		}
-		// var ms Message
-		// if err := json.Unmarshal(jsonMessage, &ms); err != nil {
-		// }
-		// log.Println("client read")
-		// log.Println(ms)
 		client.handleNewMessage(jsonMessage)
 	}
 }
@@ -98,11 +93,7 @@ func (client *Client) Write() {
 				return
 			}
 			w.Write(message)
-			var ms Message
-			if err := json.Unmarshal(message, &ms); err != nil {
-			}
-			log.Println("client send")
-			log.Println(ms)
+
 			n := len(client.send)
 			for i := 0; i < n; i++ {
 				w.Write(newline)
@@ -162,9 +153,6 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	message.Uid = client.ID.String()
 	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
-	// message.Sender = client
-	log.Print("client handle message: ")
-	log.Print(message)
 	switch message.Action {
 	case SendMessage:
 

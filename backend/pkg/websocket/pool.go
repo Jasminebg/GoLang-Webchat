@@ -141,8 +141,6 @@ func (pool *Pool) listenPubSubChannel() {
 			log.Printf("Err on unmarshal %s", err)
 			return
 		}
-		// log.Println("listen pool")
-		// log.Println(message)
 		switch message.Action {
 		case userJoined:
 			pool.handleUserJoined(message)
@@ -162,7 +160,8 @@ func (pool *Pool) handleUserJoined(message Message) {
 func (pool *Pool) handleUserLeft(message Message) {
 	for i, user := range pool.users {
 		if user.GetId() == message.Uid {
-			pool.users = append(pool.users[:i], pool.users[i+1:]...)
+			pool.users[i] = pool.users[len(pool.users)-1]
+			pool.users = pool.users[:len(pool.users)-1]
 		}
 	}
 	pool.broadcastToClients(message.encode())
@@ -192,9 +191,6 @@ func (pool *Pool) listClients(client *Client) {
 			Action: userJoined,
 			User:   user.GetName(),
 			Uid:    user.GetId(),
-			// Sender:    existingClient,
-			// Sender: user,
-			// Timestamp: time.Now().Format(time.RFC822),
 		}
 		client.send <- message.encode()
 	}

@@ -28,7 +28,6 @@ func main() {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websocket.ServeWs(pool, w, r)
 	})
-	// log.Println(config.Redis)
 
 	fs := http.FileServer(http.Dir("./build"))
 	http.Handle("/", fs)

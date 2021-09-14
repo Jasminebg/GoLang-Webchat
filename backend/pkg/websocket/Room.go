@@ -49,8 +49,6 @@ func (room *Room) RunRoom() {
 			room.unregisterClientInRoom(client)
 
 		case message := <-room.broadcast:
-			log.Println("room broadcast")
-			log.Println(message)
 			room.publishRoomMessage(message.encode())
 
 		}
@@ -66,17 +64,13 @@ func (room *Room) registerClientInRoom(client *Client) {
 	} else {
 
 		message := &Message{
-			Action: userJoinedRoom,
-			User:   client.GetName(),
-			Color:  client.GetColor(),
-			Uid:    client.GetId(),
-			// Sender: client,
-			// Room:   room,
+			Action:   userJoinedRoom,
+			User:     client.GetName(),
+			Color:    client.GetColor(),
+			Uid:      client.GetId(),
 			Target:   room.Name,
 			TargetId: room.ID.String(),
 		}
-		// log.Println("register client")
-		// log.Println(message)
 		room.publishRoomMessage(message.encode())
 	}
 	room.clients[client] = true
@@ -91,16 +85,9 @@ func (room *Room) unregisterClientInRoom(client *Client) {
 }
 
 func (room *Room) publishRoomMessage(message []byte) {
-	// var ms Message
-	// if err := json.Unmarshal(message, &ms); err != nil {
-	// }
-	// log.Println("publish room")
-	// log.Println(ms)
 	err := config.Redis.Publish(ctx, room.GetName(), message).Err()
 	if err != nil {
 		log.Println(err)
-		log.Println(message)
-		log.Println("publish ")
 	}
 }
 func (room *Room) subscribeToRoomMessages() {
@@ -124,17 +111,13 @@ func (room *Room) listClientsinRoom(client *Client) {
 	for otherclient := range room.clients {
 		if otherclient.GetId() != client.GetId() {
 			message := &Message{
-				Action: userJoinedRoom,
-				User:   otherclient.GetName(),
-				Color:  otherclient.GetColor(),
-				Uid:    otherclient.GetId(),
-				// Sender: otherclient,
+				Action:   userJoinedRoom,
+				User:     otherclient.GetName(),
+				Color:    otherclient.GetColor(),
+				Uid:      otherclient.GetId(),
 				Target:   room.Name,
 				TargetId: room.ID.String(),
-				// Room: room,
 			}
-			// log.Println("list clients")
-			// log.Println(message)
 			client.send <- message.encode()
 
 		}
@@ -149,22 +132,16 @@ func (room *Room) notifyClientJoined(sender *Client) {
 		TargetId:  room.ID.String(),
 		Timestamp: time.Now().Format(time.RFC822),
 	}
-	// log.Println("client joined")
-	// log.Println(message)
 	room.publishRoomMessage(message.encode())
 
 	joinMessage := &Message{
-		Action: userJoinedRoom,
-		User:   sender.GetName(),
-		Color:  sender.GetColor(),
-		Uid:    sender.GetId(),
-		// Sender: sender,
-		// Room:   room,
+		Action:   userJoinedRoom,
+		User:     sender.GetName(),
+		Color:    sender.GetColor(),
+		Uid:      sender.GetId(),
 		Target:   room.Name,
 		TargetId: room.ID.String(),
 	}
-	// log.Println("userjoined message")
-	// log.Println(joinMessage)
 	room.publishRoomMessage(joinMessage.encode())
 
 }
