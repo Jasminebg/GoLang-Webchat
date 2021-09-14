@@ -168,7 +168,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	switch message.Action {
 	case SendMessage:
 
-		if room := client.Pool.findRoomByID(message.Target); room != nil {
+		if room := client.Pool.findRoomByID(message.TargetId); room != nil {
 			room.broadcast <- &message
 		}
 
