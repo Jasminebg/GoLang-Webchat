@@ -19,17 +19,18 @@ const RoomJoined = "room-joined"
 
 type Message struct {
 	// Type      int     `json:"type"`
-	Message   string `json:"message"`
-	User      string `json:"user"`
-	Uid       string `json:"id"`
-	Color     string `json:"color"`
-	Timestamp string `json:"timestamp"`
-	Action    string `json:"action"`
-	Target    string `json:"room"`
-	TargetId  string `json:"roomid"`
-	Private   bool   `json:"private"`
+	Message   string      `json:"message"`
+	Sender    models.User `json:"sender"`
+	Timestamp string      `json:"timestamp"`
+	Action    string      `json:"action"`
+	Room      *Room       `json:"target"`
+	Private   bool        `json:"private"`
+	// User      string `json:"user"`
+	// Uid       string `json:"id"`
+	// Color     string `json:"color"`
+	// Target    string `json:"room"`
+	// TargetId  string `json:"roomid"`
 	// Target    *Room   `json:"target"`
-	Sender models.User `json:"sender"`
 }
 
 func (message *Message) encode() []byte {
@@ -42,7 +43,32 @@ func (message *Message) encode() []byte {
 
 	}
 
-	jsonmessage, err := json.Marshal(message)
+	// jsonmessage, err := json.Marshal(message)
+	// if err != nil {
+	// 	log.Println("error ")
+	// 	log.Println(err)
+	// }
+	jsonmessage, err := json.Marshal(struct {
+		Message   string `json:"message"`
+		User      string `json:"user"`
+		Uid       string `json:"id"`
+		Color     string `json:"color"`
+		Timestamp string `json:"timestamp"`
+		Action    string `json:"action"`
+		Target    string `json:"room"`
+		TargetId  string `json:"roomid"`
+		Private   bool   `json:"private"`
+	}{
+		Message:   message.Message,
+		User:      message.Sender.GetName(),
+		Uid:       message.Sender.GetId(),
+		Color:     message.Sender.GetColor(),
+		Timestamp: message.Timestamp,
+		Action:    message.Action,
+		Target:    message.Room.GetName(),
+		TargetId:  message.Room.GetId(),
+		Private:   message.Private,
+	})
 	if err != nil {
 		log.Println("error ")
 		log.Println(err)

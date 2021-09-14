@@ -168,7 +168,7 @@ func (pool *Pool) handleUserLeft(message Message) {
 func (pool *Pool) handleJoinRoomPrivateMessage(message Message) {
 	targetClient := pool.findClientByID(message.Message)
 	if targetClient != nil {
-		targetClient.joinRoom(message.Target, message.Sender)
+		targetClient.joinRoom(message.Room.GetName(), message.Sender)
 	}
 }
 func (pool *Pool) findUserByID(ID string) models.User {
