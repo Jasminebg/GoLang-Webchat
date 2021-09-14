@@ -35,9 +35,13 @@ type Message struct {
 func (message *Message) encode() []byte {
 	log.Println("message ")
 	log.Println(message)
-	log.Println(message.Sender)
-	log.Println(message.Sender.GetId())
-	log.Println(message.Sender.GetName())
+	if message.Sender != nil {
+		log.Println(message.Sender)
+		log.Println(message.Sender.GetId())
+		log.Println(message.Sender.GetName())
+
+	}
+
 	jsonmessage, err := json.Marshal(message)
 	if err != nil {
 		log.Println("error ")
