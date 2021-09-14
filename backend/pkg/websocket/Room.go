@@ -49,8 +49,8 @@ func (room *Room) RunRoom() {
 			room.unregisterClientInRoom(client)
 
 		case message := <-room.broadcast:
-			// log.Println("room broadcast")
-			// log.Println(message)
+			log.Println("room broadcast")
+			log.Println(message)
 			room.publishRoomMessage(message.encode())
 
 		}

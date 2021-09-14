@@ -163,8 +163,8 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
 	// message.Sender = client
-	// log.Print("message: ")
-	// log.Print(message)
+	log.Print("client handle message: ")
+	log.Print(message)
 	switch message.Action {
 	case SendMessage:
 
