@@ -14,8 +14,8 @@ import (
 
 type Client struct {
 	ID    uuid.UUID `json:"id"`
-	User  string
-	Color string
+	User  string    `json:"user"`
+	Color string    `json:"color"`
 	Conn  *websocket.Conn
 	Pool  *Pool
 	send  chan []byte

@@ -2,7 +2,8 @@ package models
 
 type User interface {
 	GetId() string
-	GetName() string
+	GetUser() string
+	GetColor() string
 }
 
 type UserRepository interface {

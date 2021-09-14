@@ -11,15 +11,20 @@ import (
 )
 
 type User struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id    string `json:"id"`
+	User  string `json:"user"`
+	Color string `json:"color"`
 }
 
-func (user *User) GetName() string {
-	return user.Id
+func (user *User) GetUser() string {
+	return user.User
 }
 func (user *User) GetId() string {
-	return user.Name
+	return user.Id
+}
+
+func (user *User) GetColor() string {
+	return user.Color
 }
 
 type UserRepository struct {
@@ -32,7 +37,7 @@ func (repo *UserRepository) AddUser(user models.User) {
 
 	_, registrationError := collection.InsertOne(ctx, bson.M{
 		"userId":   user.GetId(),
-		"userName": user.GetName(),
+		"userName": user.GetUser(),
 	})
 
 	defer cancel()
@@ -46,7 +51,7 @@ func (repo *UserRepository) RemoveUser(user models.User) {
 
 	_, registrationError := collection.DeleteOne(ctx, bson.M{
 		"userId":   user.GetId(),
-		"userName": user.GetName(),
+		"userName": user.GetUser(),
 	})
 
 	defer cancel()
