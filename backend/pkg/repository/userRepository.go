@@ -16,7 +16,7 @@ type User struct {
 	Color string `json:"color"`
 }
 
-func (user *User) GetUser() string {
+func (user *User) GetName() string {
 	return user.User
 }
 func (user *User) GetId() string {
@@ -37,7 +37,7 @@ func (repo *UserRepository) AddUser(user models.User) {
 
 	_, registrationError := collection.InsertOne(ctx, bson.M{
 		"userId":   user.GetId(),
-		"userName": user.GetUser(),
+		"userName": user.GetName(),
 	})
 
 	defer cancel()
@@ -51,7 +51,7 @@ func (repo *UserRepository) RemoveUser(user models.User) {
 
 	_, registrationError := collection.DeleteOne(ctx, bson.M{
 		"userId":   user.GetId(),
-		"userName": user.GetUser(),
+		"userName": user.GetName(),
 	})
 
 	defer cancel()

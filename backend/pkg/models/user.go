@@ -2,7 +2,7 @@ package models
 
 type User interface {
 	GetId() string
-	GetUser() string
+	GetName() string
 	GetColor() string
 }
 
