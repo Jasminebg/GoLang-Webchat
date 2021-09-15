@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -14,8 +13,6 @@ import (
 )
 
 func main() {
-
-	fmt.Println("Chat App ")
 
 	config.ConnectDatabase()
 	MongoDb := config.MongoDBClient

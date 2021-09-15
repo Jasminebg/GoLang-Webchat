@@ -49,7 +49,7 @@ class ChatPage extends Component {
 
   componentDidMount(){
     if ( auth.isAuthenticated()){
-      this._chatSocket = new ChatSocket(auth.getUserName(), auth.getUserColour(), auth.getUserToken())
+      this._chatSocket = new ChatSocket(auth.getUserName(), auth.getUserColor(), auth.getUserToken())
       this._chatSocket.connect((event) => {
         this.handleSocketEvent(event)
       });

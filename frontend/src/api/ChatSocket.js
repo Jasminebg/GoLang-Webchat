@@ -1,17 +1,17 @@
 class ChatSocket{
   cs;
 
-  constructor( userName, userColour,userToken){
+  constructor( userName, userColor,userToken){
     // var host = window.location.origin.replace(/^http/, 'ws');
     // console.log(host);
     if(userToken != ""){
-      this.cs = new WebSocket(`ws://${window.location.host}/ws?bearer=${userToken}&userColour=${userColour}`)
+      this.cs = new WebSocket(`ws://${window.location.host}/ws?bearer=${userToken}&userColor=${userColor}`)
 
     }else{
-      this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColour=${userColour}`)
+      this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColor=${userColor}`)
 
     }
-    // this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColour=${userColour}`)
+    // this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColor=${userColor}`)
 
   }
   connect(cb) {
