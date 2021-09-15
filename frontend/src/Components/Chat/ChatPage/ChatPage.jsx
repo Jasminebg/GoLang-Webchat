@@ -49,7 +49,7 @@ class ChatPage extends Component {
 
   componentDidMount(){
     if ( auth.isAuthenticated()){
-      this._chatSocket = new ChatSocket(auth.getUserName(), auth.getUserColour())
+      this._chatSocket = new ChatSocket(auth.getUserName(), auth.getUserColour(), auth.getUserToken())
       this._chatSocket.connect((event) => {
         this.handleSocketEvent(event)
       });
@@ -106,9 +106,9 @@ class ChatPage extends Component {
       id: msg.id,
       color: msg.color
     };
-    this.state.rooms[msg.roomid].users.push(user)
+      this.state.rooms[msg.roomid].users.push(user)
+      this.sortUsersinRoom(msg.roomid);
 
-    this.sortUsersinRoom(msg.roomid);
 
   };
   handleChatMessage(msg){
@@ -128,9 +128,19 @@ class ChatPage extends Component {
       id: msg.id,
       color: msg.color
     };
-    this.state.userList.push(user);
+    if (!this.userExists(msg.id)){
+      this.state.userList.push(user);
+
+    }
     
   };
+  userExists(userid){
+    for(let i = 0; i < this.users.length; i++){
+      if (this.state.userList[i].id == userid){
+        return true
+      }
+    }
+  }
   handleRoomJoined(msg){
     let user = {
       name: msg.user,

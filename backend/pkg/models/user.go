@@ -4,6 +4,7 @@ type User interface {
 	GetId() string
 	GetName() string
 	GetColor() string
+	GetPassword() string
 }
 
 type UserRepository interface {

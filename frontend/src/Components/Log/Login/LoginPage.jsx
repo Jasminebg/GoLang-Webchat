@@ -50,7 +50,7 @@ class LoginPage extends Component {
     }
     
     verifyInput=()=>{
-      if (this.state.name !== '' || this.state.password !==''  ){
+      if (this.state.name !== '' && this.state.password !== ''  ){
         this.submitLogin();
       }
     }

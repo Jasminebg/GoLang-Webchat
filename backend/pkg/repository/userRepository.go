@@ -27,6 +27,9 @@ func (user *User) GetId() string {
 func (user *User) GetColor() string {
 	return user.Color
 }
+func (user *User) GetPassword() string {
+	return user.Password
+}
 
 type UserRepository struct {
 	MongoDB *mongo.Client
@@ -37,8 +40,10 @@ func (repo *UserRepository) AddUser(user models.User) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	_, registrationError := collection.InsertOne(ctx, bson.M{
-		"userId":   user.GetId(),
-		"userName": user.GetName(),
+		"userId":    user.GetId(),
+		"userName":  user.GetName(),
+		"userColor": user.GetColor(),
+		"Password":  user.GetPassword(),
 	})
 
 	defer cancel()

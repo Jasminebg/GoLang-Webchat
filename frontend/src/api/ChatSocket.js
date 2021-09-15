@@ -1,12 +1,17 @@
 class ChatSocket{
   cs;
 
-  constructor( userName, userColour){
+  constructor( userName, userColour,userToken){
     // var host = window.location.origin.replace(/^http/, 'ws');
     // console.log(host);
-    this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColour=${userColour}`)
+    if(userToken != ""){
+      this.cs = new WebSocket(`ws://${window.location.host}/ws?bearer=${userToken}&userColour=${userColour}`)
 
-    // this.cs = new WebSocket(`wss://jsgochat.herokuapp.com/ws?user=${userName}&userColour=${userColour}`)
+    }else{
+      this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColour=${userColour}`)
+
+    }
+    // this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColour=${userColour}`)
 
   }
   connect(cb) {

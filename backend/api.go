@@ -11,6 +11,7 @@ import (
 type LoginUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Color    string `json:"color"`
 }
 
 type API struct {
