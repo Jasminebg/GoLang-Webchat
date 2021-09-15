@@ -12,9 +12,10 @@ const hmacSecret = "135DSF4"
 const defaultExpireTime = 604800
 
 type Claims struct {
-	Id    string `json:"id"`
-	User  string `json:"user"`
-	Color string `json:"color"`
+	Id       string `json:"id"`
+	User     string `json:"user"`
+	Color    string `json:"color"`
+	Password string `json:"password"`
 	jwt.StandardClaims
 }
 
@@ -26,6 +27,9 @@ func (c *Claims) GetName() string {
 }
 func (c *Claims) GetColor() string {
 	return c.Color
+}
+func (c *Claims) GetPassword() string {
+	return c.Password
 }
 
 func CreateJWTToken(user models.User) (string, error) {
