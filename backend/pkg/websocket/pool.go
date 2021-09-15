@@ -81,8 +81,9 @@ func (pool *Pool) Start() {
 
 func (pool *Pool) registerClient(client *Client) {
 
-	pool.userRepository.AddUser(client)
-
+	if user := pool.findUserByID(client.ID); user == nil {
+		pool.userRepository.AddUser(client)
+	}
 	pool.publishClientJoined(client)
 	pool.listClients(client)
 	pool.Clients[client] = true
@@ -94,14 +95,7 @@ func (pool *Pool) unregisterClient(client *Client) {
 
 	if _, ok := pool.Clients[client]; ok {
 		delete(pool.Clients, client)
-
-		// for i, user := range pool.users {
-		// 	if user.GetId() == client.GetId() {
-		// 		pool.users = append(pool.users[:i], pool.users[i+1:]...)
-
-		// 	}
-		// }
-		pool.userRepository.RemoveUser(client)
+		// pool.userRepository.RemoveUser(client)
 		pool.publishClientLeft(client)
 
 	}
@@ -112,7 +106,7 @@ func (pool *Pool) publishClientJoined(client *Client) {
 	message := &Message{
 		Action: userJoined,
 		User:   client.User,
-		Uid:    client.ID.String(),
+		Uid:    client.ID,
 		// Sender: client,
 	}
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
@@ -124,7 +118,7 @@ func (pool *Pool) publishClientLeft(client *Client) {
 	message := &Message{
 		Action: UserLeft,
 		User:   client.User,
-		Uid:    client.ID.String(),
+		Uid:    client.ID,
 		// Sender: client,
 	}
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, message.encode()).Err(); err != nil {
@@ -162,17 +156,30 @@ func (pool *Pool) handleUserLeft(message Message) {
 		if user.GetId() == message.Uid {
 			pool.users[i] = pool.users[len(pool.users)-1]
 			pool.users = pool.users[:len(pool.users)-1]
+			break
 		}
 	}
 	pool.broadcastToClients(message.encode())
 }
 
 func (pool *Pool) handleJoinRoomPrivateMessage(message Message) {
-	targetClient := pool.findClientByID(message.Uid)
-	if targetClient != nil {
+	targetClients := pool.findClientsByID(message.Message)
+	for _, targetClient := range targetClients {
 		targetClient.joinRoom(message.Target, pool.findClientByID(message.Uid))
 	}
+
 }
+
+func (pool *Pool) findClientsByID(ID string) []*Client {
+	var foundClients []*Client
+	for client := range pool.Clients {
+		if client.GetId() == ID {
+			foundClients = append(foundClients, client)
+		}
+	}
+	return foundClients
+}
+
 func (pool *Pool) findUserByID(ID string) models.User {
 	var foundUser models.User
 	for _, client := range pool.users {
@@ -185,14 +192,18 @@ func (pool *Pool) findUserByID(ID string) models.User {
 }
 
 func (pool *Pool) listClients(client *Client) {
-
+	var uniqueUsers = make(map[string]bool)
 	for _, user := range pool.users {
-		message := &Message{
-			Action: userJoined,
-			User:   user.GetName(),
-			Uid:    user.GetId(),
+		if ok := uniqueUsers[user.GetId()]; !ok {
+			message := &Message{
+				Action: userJoined,
+				User:   user.GetName(),
+				Uid:    user.GetId(),
+				Color:  user.GetColor(),
+			}
+			uniqueUsers[user.GetId()] = true
+			client.send <- message.encode()
 		}
-		client.send <- message.encode()
 	}
 }
 
@@ -274,7 +285,7 @@ func (pool *Pool) createRoom(name string, private bool) *Room {
 func (pool *Pool) findClientByID(ID string) *Client {
 	var foundClient *Client
 	for client := range pool.Clients {
-		if client.ID.String() == ID {
+		if client.ID == ID {
 			foundClient = client
 			break
 		}

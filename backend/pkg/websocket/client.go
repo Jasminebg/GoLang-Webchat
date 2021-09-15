@@ -6,16 +6,16 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/auth"
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/config"
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/models"
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
 type Client struct {
-	ID    uuid.UUID `json:"id"`
-	User  string    `json:"user"`
-	Color string    `json:"color"`
+	ID    string `json:"id"`
+	User  string `json:"user"`
+	Color string `json:"color"`
 	Conn  *websocket.Conn
 	Pool  *Pool
 	send  chan []byte
@@ -37,9 +37,9 @@ var (
 	space   = []byte{' '}
 )
 
-func newClient(conn *websocket.Conn, pool *Pool, name string, color string) *Client {
+func newClient(conn *websocket.Conn, pool *Pool, name string, color string, id string) *Client {
 	return &Client{
-		ID:    uuid.New(),
+		ID:    id,
 		User:  name,
 		Color: color,
 		Conn:  conn,
@@ -82,7 +82,6 @@ func (client *Client) Write() {
 
 		select {
 		case message, ok := <-client.send:
-			// message.Timestamp = time.Now().Format(time.RFC822)
 			client.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
 				client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
@@ -114,22 +113,20 @@ func (client *Client) Write() {
 }
 
 func ServeWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
-	name, ok := r.URL.Query()["user"]
 
-	if !ok || len(name[0]) < 1 {
-		log.Println("Url param 'user' is missing")
+	userCtxValue := r.Context().Value(auth.UserContextKey)
+	if userCtxValue == nil {
+		log.Println("Not authenticated")
 		return
 	}
-	color, ok := r.URL.Query()["userColour"]
-	if !ok || len(color[0]) < 1 {
-		color[0] = "E92750"
-	}
+	user := userCtxValue.(models.User)
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	client := newClient(conn, pool, name[0], color[0])
+	client := newClient(conn, pool, user.GetName(), user.GetColor(), user.GetId())
 
 	go client.Write()
 	go client.Read()
@@ -150,7 +147,7 @@ func (client *Client) handleNewMessage(jsonMessage []byte) {
 		return
 	}
 	message.User = client.User
-	message.Uid = client.ID.String()
+	message.Uid = client.ID
 	message.Color = client.Color
 	message.Timestamp = time.Now().Format(time.RFC822)
 	switch message.Action {
@@ -217,11 +214,6 @@ func (client *Client) joinRoom(roomName string, sender models.User) *Room {
 		client.rooms[room] = true
 		room.register <- client
 		client.notifyRoomJoined(room, sender)
-		// if sender == nil {
-		// } else {
-		// 	client.notifyPrivateRoomJoined(room, sender)
-		// }
-
 	}
 	return room
 }
@@ -236,14 +228,12 @@ func (client *Client) isInRoom(room *Room) bool {
 
 func (client *Client) inviteTargetUser(target models.User, room *Room) {
 	inviteMessage := &Message{
-		Action:  JoinRoomPrivate,
-		Message: target.GetId(),
-		User:    client.User,
-		Uid:     client.ID.String(),
-		// Room:    room,
+		Action:   JoinRoomPrivate,
+		Message:  target.GetId(),
+		User:     client.User,
+		Uid:      client.ID,
 		Target:   room.Name,
 		TargetId: room.ID.String(),
-		// Sender: target,
 	}
 
 	if err := config.Redis.Publish(ctx, PubSubGeneralChannel, inviteMessage.encode()).Err(); err != nil {
@@ -253,39 +243,26 @@ func (client *Client) inviteTargetUser(target models.User, room *Room) {
 
 func (client *Client) notifyRoomJoined(room *Room, sender models.User) {
 	message := Message{
-		Action: RoomJoined,
-		// Room:     room,
+		Action:   RoomJoined,
 		Target:   room.Name,
 		TargetId: room.ID.String(),
-		// Sender: client,
-		User:  client.User,
-		Color: client.Color,
-		Uid:   client.ID.String(),
+		User:     client.User,
+		Color:    client.Color,
+		Uid:      client.ID,
 	}
 	client.send <- message.encode()
 
 }
 func (client *Client) notifyPrivateRoomJoined(room *Room, sender *Client) {
 	message := Message{
-		Action: RoomJoined,
-		// Room:   room,
+		Action:   RoomJoined,
 		Target:   room.Name,
 		TargetId: room.ID.String(),
-		// Sender: client,
-		User:  client.User,
-		Color: client.Color,
-		Uid:   client.ID.String(),
+		User:     client.User,
+		Color:    client.Color,
+		Uid:      client.ID,
 	}
 	client.send <- message.encode()
-
-	// userMessage := &Message{
-	// 	Action:   userJoinedRoom,
-	// 	User:     sender.GetName(),
-	// 	Color:    sender.GetColor(),
-	// 	Uid:      sender.GetID(),
-	// 	TargetId: room.ID.String(),
-	// }
-	// client.send <- userMessage.encode()
 
 }
 
@@ -297,12 +274,5 @@ func (client *Client) GetColor() string {
 }
 
 func (client *Client) GetId() string {
-	return client.ID.String()
+	return client.ID
 }
-
-// func (client *Client) handleNewMessage(jsonMessage []byte){
-
-// }
-// func (client *Client) handleNewMessage(jsonMessage []byte){
-
-// }

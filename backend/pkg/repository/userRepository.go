@@ -11,9 +11,10 @@ import (
 )
 
 type User struct {
-	Id    string `json:"id"`
-	User  string `json:"user"`
-	Color string `json:"color"`
+	Id       string `json:"id"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Color    string `json:"color"`
 }
 
 func (user *User) GetName() string {
@@ -58,7 +59,7 @@ func (repo *UserRepository) RemoveUser(user models.User) {
 
 	checkErr(registrationError)
 }
-func (repo *UserRepository) FindUserByUsername(userName string) models.User {
+func (repo *UserRepository) FindUserByUsername(userName string) *User {
 	collection := repo.MongoDB.Database(os.Getenv("MONGODB_DATABASE")).Collection("users")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 

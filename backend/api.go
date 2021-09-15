@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/auth"
 	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/repository"
 )
 
@@ -30,7 +31,7 @@ func (api *API) HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := auth.ComparePassword(user.PAssword, dbUser.Password)
+	ok, err := auth.ComparePassword(user.Password, dbUser.Password)
 	if !ok || err != nil {
 		returnErrorResponse(w)
 		return
