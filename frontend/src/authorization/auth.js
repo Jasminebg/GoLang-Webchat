@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 class Auth {
   constructor(){
     this.sessionStorageUser = 'ChatUser';
@@ -5,13 +7,14 @@ class Auth {
   }
 
   async login(name, password, color, cb) {
-    if(colour.charAt(0) === '#'){
-      colour = colour.replace('#', '');
+    if(color.charAt(0) === '#'){
+      color = color.replace('#', '');
     }
-    user = {
+    let user = {
       username: this.name,
       password: this.password,
-      color: this.color
+      color: this.color,
+      token: ""
     };
 
     try{
@@ -20,7 +23,7 @@ class Auth {
         this.loginError = "Login failed";
         cb();
       }else {
-        token = result.data;
+        this.user.token = result.data;
       }
     }catch(e){
       this.loginError = "Login failed";
@@ -31,10 +34,10 @@ class Auth {
 
 
     sessionStorage.setItem(this.sessionStorageUser, JSON.stringify({
-      _name: name,
-      _token: token,
-      _password:password,
-      _color: color
+      _name: this.user.name,
+      _token: this.user.token,
+      _password:this.user.password,
+      _color: this.user.color
     }));
     cb();
   }
