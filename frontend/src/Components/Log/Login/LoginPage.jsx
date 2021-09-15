@@ -9,7 +9,7 @@ class LoginPage extends Component {
     this.state={
       name:"",
       password:"",
-      colour:"", 
+      color:"", 
       continue: true
     };
   }
@@ -30,12 +30,12 @@ class LoginPage extends Component {
             <label htmlFor="name" className="form__label">Username</label>
           </div>
           <div className="form__group field">
-            <input type="input" className="form__field" name='password' id="password" value={this.state.name} onChange={e=> this.handleChange(e)}/>
-            <label htmlFor="name" className="form__label">Password</label>
+            <input type="input" className="form__field" name='password' id="password" value={this.state.password} onChange={e=> this.handleChange(e)}/>
+            <label htmlFor="password" className="form__label">Password</label>
           </div>
           <div className="form__group field">
-            <input type="input" className="form__field" name='colour' id="colour" value={this.state.color} onChange={e=> this.handleChange(e)}/>
-            <label htmlFor="colour" className="form__label"> <span style={{fontStyle:'italic'}}>(Optional)</span> Name Colour  <span style={{color:'#E92750'}}>default: Red(E92750) </span>  </label>
+            <input type="input" className="form__field" name='color' id="color" value={this.state.color} onChange={e=> this.handleChange(e)}/>
+            <label htmlFor="color" className="form__label"> <span style={{fontStyle:'italic'}}>(Optional)</span> Name color  <span style={{color:'#E92750'}}>default: Red(E92750) </span>  </label>
           </div>
           <button className="login-button"  onKeyPress={this.onKeyPress} onClick={this.verifyInput}>Login</button>
         </div>
@@ -44,7 +44,7 @@ class LoginPage extends Component {
     }
 
     submitLogin =()=>{
-      auth.login(this.state.name,this.state.password, this.state.colour,()=>{
+      auth.login(this.state.name,this.state.password, this.state.color,()=>{
         this.props.history.push("/chat")
       })
     }
