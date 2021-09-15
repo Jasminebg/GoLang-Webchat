@@ -11,9 +11,9 @@ class Auth {
       color = color.replace('#', '');
     }
     let user = {
-      username: this.name,
-      password: this.password,
-      color: this.color,
+      username: name,
+      password: password,
+      color: color,
       token: ""
     };
 
@@ -34,10 +34,10 @@ class Auth {
 
 
     sessionStorage.setItem(this.sessionStorageUser, JSON.stringify({
-      _name: this.user.name,
-      _token: this.user.token,
-      _password:this.user.password,
-      _color: this.user.color
+      _name: user.name,
+      _token: user.token,
+      _password:user.password,
+      _color: user.color
     }));
     cb();
   }
