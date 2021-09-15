@@ -13,13 +13,14 @@ import (
 )
 
 type Client struct {
-	ID    string `json:"id"`
-	User  string `json:"user"`
-	Color string `json:"color"`
-	Conn  *websocket.Conn
-	Pool  *Pool
-	send  chan []byte
-	rooms map[*Room]bool
+	ID       string `json:"id"`
+	User     string `json:"user"`
+	Color    string `json:"color"`
+	Password string `json:"password"`
+	Conn     *websocket.Conn
+	Pool     *Pool
+	send     chan []byte
+	rooms    map[*Room]bool
 }
 
 const (
@@ -275,4 +276,7 @@ func (client *Client) GetColor() string {
 
 func (client *Client) GetId() string {
 	return client.ID
+}
+func (client *Client) GetPassword() string {
+	return client.Password
 }

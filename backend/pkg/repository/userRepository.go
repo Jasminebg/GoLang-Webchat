@@ -11,10 +11,10 @@ import (
 )
 
 type User struct {
-	Id   string `json:"id"`
-	User string `json:"user"`
-	// Password string `json:"password"`
-	Color string `json:"color"`
+	Id       string `json:"id"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Color    string `json:"color"`
 }
 
 func (user *User) GetName() string {
@@ -27,10 +27,9 @@ func (user *User) GetId() string {
 func (user *User) GetColor() string {
 	return user.Color
 }
-
-// func (user *User) GetPassword() string {
-// 	return user.Password
-// }
+func (user *User) GetPassword() string {
+	return user.Password
+}
 
 type UserRepository struct {
 	MongoDB *mongo.Client
@@ -44,7 +43,7 @@ func (repo *UserRepository) AddUser(user models.User) {
 		"userId":    user.GetId(),
 		"userName":  user.GetName(),
 		"userColor": user.GetColor(),
-		// "Password":  user.GetPassword(),
+		"Password":  user.GetPassword(),
 	})
 
 	defer cancel()
