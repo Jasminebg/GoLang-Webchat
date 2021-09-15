@@ -8,6 +8,7 @@ class LoginPage extends Component {
     super(props);
     this.state={
       name:"",
+      password:"",
       colour:"", 
       continue: true
     };
@@ -23,9 +24,14 @@ class LoginPage extends Component {
     return (
       <div className="LoginPage">
         <div className="loginContainer" onKeyPress={this.keyPressed}>
+        <h2>Create or Sign in to your account</h2>
           <div className="form__group field">
             <input type="input" className="form__field" name='name' id="name" value={this.state.name} onChange={e=> this.handleChange(e)}/>
             <label htmlFor="name" className="form__label">Username</label>
+          </div>
+          <div className="form__group field">
+            <input type="input" className="form__field" name='password' id="password" value={this.state.name} onChange={e=> this.handleChange(e)}/>
+            <label htmlFor="name" className="form__label">Password</label>
           </div>
           <div className="form__group field">
             <input type="input" className="form__field" name='colour' id="colour" value={this.state.color} onChange={e=> this.handleChange(e)}/>
@@ -38,13 +44,13 @@ class LoginPage extends Component {
     }
 
     submitLogin =()=>{
-      auth.login(this.state.name, this.state.colour,()=>{
+      auth.login(this.state.name,this.state.password, this.state.colour,()=>{
         this.props.history.push("/chat")
       })
     }
     
     verifyInput=()=>{
-      if (this.state.name !== ''  ){
+      if (this.state.name !== '' || this.state.password !==''  ){
         this.submitLogin();
       }
     }

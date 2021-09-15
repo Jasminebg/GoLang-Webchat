@@ -3,12 +3,13 @@ class Auth {
     this.sessionStorageUser = 'ChatUser';
   }
 
-  login(name, colour, cb) {
+  login(name, password, colour, cb) {
     if(colour.charAt(0) === '#'){
       colour = colour.replace('#', '');
     }
     sessionStorage.setItem(this.sessionStorageUser, JSON.stringify({
       _name: name,
+      _password:password,
       _colour: colour
     }));
     cb();

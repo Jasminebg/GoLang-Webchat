@@ -58,6 +58,21 @@ func (repo *UserRepository) RemoveUser(user models.User) {
 
 	checkErr(registrationError)
 }
+func (repo *UserRepository) FindUserByUsername(userName string) models.User {
+	collection := repo.MongoDB.Database(os.Getenv("MONGODB_DATABASE")).Collection("users")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	var user User
+	//find room by name
+	err := collection.FindOne(ctx, bson.M{"userName": userName}).Decode(&user)
+
+	checkErr(err)
+
+	//assign room id, name and private to returned struct, check for err
+	defer cancel()
+
+	return &user
+}
 
 func (repo *UserRepository) FindUserById(ID string) models.User {
 	collection := repo.MongoDB.Database(os.Getenv("MONGODB_DATABASE")).Collection("users")
