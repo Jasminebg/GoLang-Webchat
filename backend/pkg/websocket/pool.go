@@ -152,12 +152,18 @@ func (pool *Pool) handleUserJoined(message Message) {
 }
 
 func (pool *Pool) handleUserLeft(message Message) {
-	for i, user := range pool.users {
-		if user.GetId() == message.Uid {
-			pool.users[i] = pool.users[len(pool.users)-1]
-			pool.users = pool.users[:len(pool.users)-1]
-			break
+	if len(pool.users) == 1 {
+		tmppool := make([]models.User, 0)
+		pool.users = tmppool
+	} else {
+		for i, user := range pool.users {
+			if user.GetId() == message.Uid {
+				pool.users[i] = pool.users[len(pool.users)-1]
+				pool.users = pool.users[:len(pool.users)-1]
+				break
+			}
 		}
+
 	}
 	pool.broadcastToClients(message.encode())
 }

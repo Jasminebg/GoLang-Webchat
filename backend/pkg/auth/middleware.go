@@ -11,7 +11,8 @@ import (
 type contextKey string
 
 const UserContextKey = contextKey("User")
-const ColorContextKey = contextKey("Color")
+
+// const ColorContextKey = contextKey("Color")
 
 type AnonUser struct {
 	Id       string `json:"id"`
@@ -38,6 +39,8 @@ func AuthMiddleware(f http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, tok := r.URL.Query()["bearer"]
 		name, nok := r.URL.Query()["user"]
+		log.Println("URL")
+		log.Println(r.URL)
 		log.Println("token and name")
 		log.Println(token, name)
 
@@ -47,16 +50,14 @@ func AuthMiddleware(f http.HandlerFunc) http.HandlerFunc {
 				http.Error(w, "Forbidden", http.StatusForbidden)
 			} else {
 				ctx := context.WithValue(r.Context(), UserContextKey, user)
-				log.Println("user and ctx")
-				log.Println(user)
-				log.Println(ctx)
 				f(w, r.WithContext(ctx))
 			}
 		} else if nok && len(name) == 1 {
 			user := AnonUser{Id: uuid.New().String(), Name: name[0]}
 			ctx := context.WithValue(r.Context(), UserContextKey, &user)
 			log.Println("user and ctx2")
-			log.Println(user)
+			log.Println(name)
+			log.Println(user.GetName())
 			log.Println(ctx)
 			f(w, r.WithContext(ctx))
 		} else {
