@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -37,6 +38,8 @@ func AuthMiddleware(f http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, tok := r.URL.Query()["bearer"]
 		name, nok := r.URL.Query()["user"]
+		log.Println("token and name")
+		log.Println(token, name)
 
 		if tok && len(token) == 1 {
 			user, err := ValidateToken(token[0])

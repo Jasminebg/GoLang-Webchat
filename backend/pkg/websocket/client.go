@@ -121,6 +121,7 @@ func ServeWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := userCtxValue.(models.User)
+	log.Println(user)
 
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {

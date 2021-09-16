@@ -70,8 +70,6 @@ class ChatPage extends Component {
   handleNewMessage(event){
     let data = event.data;
     data = data.split(/\r?\n/);
-    console.log("data : ");
-    console.log(data);
     for (let i = 0; i < data.length; i++){
       let msg = JSON.parse(data[i]);
       switch (msg.action){
@@ -135,7 +133,7 @@ class ChatPage extends Component {
     
   };
   userExists(userid){
-    for(let i = 0; i < this.users.length; i++){
+    for(let i = 0; i < this.userList.length; i++){
       if (this.state.userList[i].id == userid){
         return true
       }
@@ -206,7 +204,6 @@ class ChatPage extends Component {
   };
   findRoom(event){
     if(event.keyCode === 13 && event.target.value !== ""){
-      console.log(event)
       this._chatSocket.joinRoom(event.target.value);
       this._chatSocket.roomInput = event.target.value;
       event.target.value = "";
