@@ -47,6 +47,7 @@ func AuthMiddleware(f http.HandlerFunc) http.HandlerFunc {
 				http.Error(w, "Forbidden", http.StatusForbidden)
 			} else {
 				ctx := context.WithValue(r.Context(), UserContextKey, user)
+				log.Println(user, ctx)
 				f(w, r.WithContext(ctx))
 			}
 		} else if nok && len(name) == 1 {
