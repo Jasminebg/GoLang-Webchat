@@ -55,6 +55,9 @@ func AuthMiddleware(f http.HandlerFunc) http.HandlerFunc {
 		} else if nok && len(name) == 1 {
 			user := AnonUser{Id: uuid.New().String(), Name: name[0]}
 			ctx := context.WithValue(r.Context(), UserContextKey, &user)
+			log.Println("user and ctx2")
+			log.Println(user)
+			log.Println(ctx)
 			f(w, r.WithContext(ctx))
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
