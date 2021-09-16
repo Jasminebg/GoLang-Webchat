@@ -23,7 +23,7 @@ class Auth {
         this.loginError = "Login failed";
         cb();
       }else {
-        this.user.token = result.data;
+        user.token = result.data;
       }
     }catch(e){
       this.loginError = "Login failed";
@@ -34,7 +34,7 @@ class Auth {
 
 
     sessionStorage.setItem(this.sessionStorageUser, JSON.stringify({
-      _name: user.name,
+      _name: user.username,
       _token: user.token,
       _password:user.password,
       _color: user.color
