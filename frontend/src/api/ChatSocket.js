@@ -59,7 +59,6 @@ class ChatSocket{
   }
 
   joinRoom(roomName){
-    console.log(roomName)
     this.cs.send(JSON.stringify({action:'join-room', message:roomName}))
   };
   leaveRoom(room){
