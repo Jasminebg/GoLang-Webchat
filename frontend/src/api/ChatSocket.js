@@ -5,10 +5,10 @@ class ChatSocket{
     // var host = window.location.origin.replace(/^http/, 'ws');
     // console.log(host);
     if(userToken != ""){
-      this.cs = new WebSocket(`ws://${window.location.host}/ws?bearer=${userToken}&userColor=${userColor}`)
+      this.cs = new WebSocket(`wss://${window.location.host}/ws?bearer=${userToken}&userColor=${userColor}`)
 
     }else{
-      this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColor=${userColor}`)
+      this.cs = new WebSocket(`wss://${window.location.host}/ws?user=${userName}&userColor=${userColor}`)
 
     }
     // this.cs = new WebSocket(`ws://${window.location.host}/ws?user=${userName}&userColor=${userColor}`)
