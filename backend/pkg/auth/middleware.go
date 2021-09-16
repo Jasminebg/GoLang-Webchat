@@ -13,9 +13,10 @@ const UserContextKey = contextKey("User")
 const ColorContextKey = contextKey("Color")
 
 type AnonUser struct {
-	Id    string `json:"id"`
-	Name  string `json:"user"`
-	Color string `json:"color"`
+	Id       string `json:"id"`
+	Name     string `json:"user"`
+	Color    string `json:"color"`
+	Password string `json:"password"`
 }
 
 func (user *AnonUser) GetId() string {
@@ -29,6 +30,9 @@ func (user *AnonUser) GetColor() string {
 	return user.Color
 }
 
+func (user *AnonUser) GetPassword() string {
+	return user.Password
+}
 func AuthMiddleware(f http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, tok := r.URL.Query()["bearer"]
