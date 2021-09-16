@@ -129,7 +129,11 @@ func ServeWs(pool *Pool, w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-	client := newClient(conn, pool, user.GetName(), user.GetColor(), user.GetId())
+	color := user.GetColor()
+	if color == "" {
+		color = "E92750"
+	}
+	client := newClient(conn, pool, user.GetName(), color, user.GetId())
 
 	go client.Write()
 	go client.Read()

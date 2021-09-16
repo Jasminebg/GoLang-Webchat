@@ -39,10 +39,10 @@ func AuthMiddleware(f http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, tok := r.URL.Query()["bearer"]
 		name, nok := r.URL.Query()["user"]
-		log.Println("URL")
-		log.Println(r.URL)
-		log.Println("token and name")
-		log.Println(token, name)
+		color, cok := r.URL.Query()["userColor"]
+		if cok {
+			log.Println(cok)
+		}
 
 		if tok && len(token) == 1 {
 			user, err := ValidateToken(token[0])
@@ -53,12 +53,8 @@ func AuthMiddleware(f http.HandlerFunc) http.HandlerFunc {
 				f(w, r.WithContext(ctx))
 			}
 		} else if nok && len(name) == 1 {
-			user := AnonUser{Id: uuid.New().String(), Name: name[0]}
+			user := AnonUser{Id: uuid.New().String(), Name: name[0], Color: color[0]}
 			ctx := context.WithValue(r.Context(), UserContextKey, &user)
-			log.Println("user and ctx2")
-			log.Println(name)
-			log.Println(user.GetName())
-			log.Println(ctx)
 			f(w, r.WithContext(ctx))
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
