@@ -21,7 +21,7 @@ func ConnectDatabase() {
 	pass := os.Getenv("PASS")
 
 	MONGODB_URI := fmt.Sprintf("mongodb+srv://%s:%s@webchat.kcpei.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", user, pass)
-	#need to store more parts of the db link in env variables 
+	//need to store more parts of the db link in env variables 
 	clientOptions := options.Client().ApplyURI(MONGODB_URI)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
