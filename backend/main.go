@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/auth"
-	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/config"
-	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/repository"
-	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/websocket"
+	"github.com/bilalbg/GoLang-Webchat/backend/pkg/auth"
+	"github.com/bilalbg/GoLang-Webchat/backend/pkg/config"
+	"github.com/bilalbg/GoLang-Webchat/backend/pkg/repository"
+	"github.com/bilalbg/GoLang-Webchat/backend/pkg/websocket"
 )
 
 func main() {
