@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/auth"
-	"github.com/Jasminebg/GoLang-Webchat/backend/pkg/repository"
+	"github.com/bilalbg/GoLang-Webchat/backend/pkg/auth"
+	"github.com/bilalbg/GoLang-Webchat/backend/pkg/repository"
 )
 
 type LoginUser struct {
